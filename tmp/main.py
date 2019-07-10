@@ -9,6 +9,7 @@ def fastqc(filename):
     if error is not None:
         raise Exception("FASTQC error!")
 
+
 def cutadapt(filename, adapter="TGGAATTCTCGGGTGCCAAGG"):
     in_file = filename
     out_file = "Norm_1_reduced_trimmed.fastq"
@@ -22,4 +23,6 @@ def cutadapt(filename, adapter="TGGAATTCTCGGGTGCCAAGG"):
     fastqc(out_file)
 
 
+def bowtie():
+    reference = ""
 

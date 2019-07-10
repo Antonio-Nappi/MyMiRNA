@@ -1,0 +1,8 @@
+<<<<<<< HEAD
+*.fastq
+*.idea
+=======
+**/*.fastq
+**/.idea
+**/venv
+>>>>>>> 831975570ee56deb0222f99aa9882cff57e96b43
