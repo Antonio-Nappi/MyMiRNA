@@ -21,5 +21,5 @@ def cutadapt(filename, adapter="TGGAATTCTCGGGTGCCAAGG"):
     print(out, err)
     fastqc(out_file)
 
-def bowtie():
-reference = ""
+
+
