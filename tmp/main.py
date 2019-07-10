@@ -1,13 +1,11 @@
 import shlex
 import subprocess
+import run_command from utils as cmd
 
 
 def fastqc(filename):
     fastqc_command = "fastqc {}".format(filename)
-    fastqc_process = subprocess.Popen(shlex.split(fastqc_command))
-    _, error = fastqc_process.communicate()
-    if error is not None:
-        raise Exception("FASTQC error!")
+    return cmd(fastqc_command)
 
 
 def cutadapt(filename, adapter="TGGAATTCTCGGGTGCCAAGG"):
@@ -17,12 +15,15 @@ def cutadapt(filename, adapter="TGGAATTCTCGGGTGCCAAGG"):
                                                                                        out_file,
                                                                                        in_file,
                                                                                        8, 20, 35, 10)
-    p = subprocess.Popen(shlex.split(command))
-    out, err = p.communicate()
-    print(out, err)
+    out_file = cmd(command)
     fastqc(out_file)
 
 
-def bowtie():
-    reference = ""
+def indexing(filename):
+    in_file = filename
+    out_file = filename+"indexed"
+    command = "bowtie-build -f {0} {1}".format(in_file,out_file)
+    return cmd(command)
+
+
 
