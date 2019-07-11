@@ -1,5 +1,6 @@
 import shlex
 import subprocess
+import tempfile
 
 
 def run_command(command):
@@ -16,3 +17,4 @@ def run_command(command):
         raise Exception(err)
 
     return out
+

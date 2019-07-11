@@ -1,11 +1,9 @@
-import shlex
-import subprocess
-import run_command from utils as cmd
+from utils import run_command
 
 
 def fastqc(filename):
     fastqc_command = "fastqc {}".format(filename)
-    return cmd(fastqc_command)
+    return run_command(fastqc_command)
 
 
 def cutadapt(filename, adapter="TGGAATTCTCGGGTGCCAAGG"):
@@ -15,15 +13,20 @@ def cutadapt(filename, adapter="TGGAATTCTCGGGTGCCAAGG"):
                                                                                        out_file,
                                                                                        in_file,
                                                                                        8, 20, 35, 10)
-    out_file = cmd(command)
+    out_file = run_command(command)
+    print(out_file)
     fastqc(out_file)
-
 
 def indexing(filename):
     in_file = filename
     out_file = filename+"indexed"
     command = "bowtie-build -f {0} {1}".format(in_file,out_file)
-    return cmd(command)
-
-
-
+    return run_command(command)
+'''
+This function converts a bam file into a fastq file
+'''
+def bam_to_fastq(filename):
+    in_file = filename
+    out_file = in_file[:len(in_file)-3]+"fastq"
+    command = "samtools fastq {0} > {1}".format(in_file,out_file)
+    return run_command(command)
