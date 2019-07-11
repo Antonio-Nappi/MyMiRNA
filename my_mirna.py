@@ -48,5 +48,10 @@ def bam_to_fastq(filename):
 '''
 def mapping_butter(in_file, ref_genome, n_core):
     command = "butter --mismatches {0} --aln_cores {1} --max_rep {2} {3} {4}".format(1, n_core, 5000, in_file, ref_genome)
+    return run_command(command)
 
+def mapping_tophat(in_file,mode,cores):
+    #bisogna indicizzare il file hairpin e mature
+    #il comando cambia a seconda della modalità
+    command = "tophat --bowtie1 -N 1 --library-type=fr-unstrand -p {0} /home/antonio/Scrivania/idexed/mature indicizzato {1}".format(cores,in_file)
     return run_command(command)
