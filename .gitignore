@@ -1,4 +1,6 @@
 **/*.fastq
 **/.idea
 **/venv
-
+**/*.html
+.Rhistory
+__pycache__/

@@ -27,7 +27,6 @@ def cutadapt(filename, adapter="TGGAATTCTCGGGTGCCAAGG"):
  This function allows to index the files to speed up the mapping process.
  The tool used is Bowtie
 '''
-
 def indexing(filename):
     in_file = filename
     out_file = filename+"indexed"
@@ -35,13 +34,13 @@ def indexing(filename):
     return run_command(command)
 
 '''
-This function converts a bam file into a fastq file
+ This function converts a bam file into a fastq file
 '''
 def bam_to_fastq(filename):
     in_file = filename
     out_file = in_file[:len(in_file)-3]+"fastq"
     command = "samtools fastq {0} > {1}".format(in_file,out_file)
-
+    return run_command(command)
 
 '''
  This function allows to discover unique reads against the reference genome
