@@ -1,4 +1,3 @@
 bs4
+re
 requests
-shlex
-subprocess
