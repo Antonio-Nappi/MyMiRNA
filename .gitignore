@@ -4,3 +4,6 @@
 **/*.html
 .Rhistory
 __pycache__/
+data/
+ShortStack/
+assets/
