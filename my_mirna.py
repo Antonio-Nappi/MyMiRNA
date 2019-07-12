@@ -65,7 +65,7 @@ def mapping_shortstack(in_file, ref_genome, n_core):
      :param n_core: the number of cores to run for the analysis
      :return: the output of the command
     '''
-    command = "ShortStack --nohp --readfile {0} --genome {1}".format(in_file, ref_genome)
+    command = "ShortStack --readfile {0} --genome {1}".format(in_file, ref_genome)
     return run_command(command)
 
 def mapping_tophat(in_file, ref_path, cores):
