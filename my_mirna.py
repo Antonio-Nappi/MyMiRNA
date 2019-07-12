@@ -68,6 +68,17 @@ def mapping_shortstack(in_file, ref_genome, n_core):
     command = "ShortStack --nohp --readfile {0} --genome {1}".format(in_file, ref_genome)
     return run_command(command)
 
+def mapping_tophat(in_file, ref_path, cores):
+    '''
+    This function allows to identify all the miRNAs by aligning the reads against mirBase.
+    :param in_file: the input file with the reads that are going to be aligned
+    :param ref_path: the path of the file about the reference file of mirBase
+    :param cores: the number of cores to use for the alignment
+    :return: the output of the command
+    '''
+
+    command = "tophat --bowtie1 -N 1 --library-type=fr-unstranded -p {0} {1} {2}".format(cores, ref_path, in_file)
+    return run_command(command)
 
 def feature_counts(in_file):
     '''
