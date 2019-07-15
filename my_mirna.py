@@ -88,3 +88,20 @@ def feature_counts(in_file):
     out_file = "out"
     command = "featureCounts -a hsa.gtf -o {0} {1}".format(out_file, in_file)
     return run_command(command)
+
+def miRNA_filter(filename):
+    '''
+     This function filters all the reads in the Unplaced.txt (the outcome of ShortStask).
+     The applied filter removes all the reads that are already mapped as miRNAs.
+     The output file contains all the reads that are not miRNAs.
+     :param filename: the input file to filter
+     :return: the filterd output file
+    '''
+    out_file = open("filtered_miRNA.txt", "w")
+    f = open(filename) #default rt mode
+    line = f.readlines()
+    for x in line:
+        value = x.split('\t')[4][:-1]
+        if value != '>50':
+            out_file.write(x)
+    return out_file
