@@ -1,5 +1,7 @@
 from utils import run_command
-
+import matplotlib.pyplot as plt
+import forgi.visual.mplotlib as fvm
+import forgi
 
 def fastqc(filename):
     '''
@@ -86,7 +88,7 @@ def feature_counts(in_file):
      :return: the output of the coomand
     '''
     out_file = "out"
-    command = "featureCounts -a hsa.gtf -o {0} {1}".format(out_file, in_file)
+    command = "featureCounts -O -a hsa.gtf -o {0} {1}".format(out_file, in_file)
     return run_command(command)
 
 def miRNA_filter(filename):
@@ -105,3 +107,9 @@ def miRNA_filter(filename):
         if value != '>50':
             out_file.write(x)
     return out_file
+
+def structure():
+    cg = forgi.load_rna('Cluster_229_Y.txt',allow_many=false)
+    fvm.plot_rna(cg, text_kwargs={"fontweight":"black"}, lighten=0.7,
+             backbone_kwargs={"linewidth":3})
+    plt.show()
