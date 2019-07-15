@@ -1,6 +1,5 @@
 import shlex
 import subprocess
-import tempfile
 
 
 def run_command(command):
