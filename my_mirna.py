@@ -50,7 +50,7 @@ def mapping_shortstack(in_file, ref_genome, n_core):
     '''
      This function allows to discover unique reads against the reference genome
     '''
-    command = "ShortStack --nohp --readfile {0} --genome {1}".format(in_file, ref_genome)
+    command = "ShortStack --readfile {0} --genome {1}".format(in_file, ref_genome)
     return run_command(command)
 
 
