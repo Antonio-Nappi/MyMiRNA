@@ -1,5 +1,7 @@
 from utils import run_command
-
+import matplotlib.pyplot as plt
+import forgi.visual.mplotlib as fvm
+import forgi
 
 def fastqc(filename):
     '''
@@ -50,11 +52,19 @@ def mapping_shortstack(in_file, ref_genome, n_core):
     '''
      This function allows to discover unique reads against the reference genome
     '''
-    command = "ShortStack --nohp --readfile {0} --genome {1}".format(in_file, ref_genome)
+    command = "ShortStack --readfile {0} --genome {1}".format(in_file, ref_genome)
     return run_command(command)
 
 
 def feature_counts(in_file):
     out_file = "out"
-    command = "featureCounts -a hsa.gtf -o {0} {1}".format(out_file, in_file)
+    command = "featureCounts -O -a hsa.gtf -o {0} {1}".format(out_file, in_file)
     return run_command(command)
+
+def structure():
+    cg = forgi.load_rna('Cluster_229_Y.txt',allow_many=false)
+    fvm.plot_rna(cg, text_kwargs={"fontweight":"black"}, lighten=0.7,
+             backbone_kwargs={"linewidth":3})
+    plt.show()
+
+structure()
