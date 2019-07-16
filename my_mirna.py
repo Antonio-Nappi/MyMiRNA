@@ -1,7 +1,4 @@
 from utils import run_command
-import matplotlib.pyplot as plt
-import forgi.visual.mplotlib as fvm
-import forgi
 
 def fastqc(filename):
     '''
@@ -22,13 +19,11 @@ def cutadapt(filename, out_file = "Norm_1_reduced_trimmed.fastq", adapter="TGGAA
      :param out_file: the output file with the results of the trimming
      :param adapter: the adapter sequence to remove from reads
     '''
-    in_file = filename
     command = "cutadapt -a {0} -o {1} {2} -j {3} -q {4} --discard-untrimmed -M {5} -m {6}".format(adapter,
                                                                                        out_file,
-                                                                                       in_file,
+                                                                                       filename,
                                                                                        8, 20, 35, 10)
     out_file = run_command(command)
-    print(out_file)
     fastqc(out_file)
 
 
@@ -39,9 +34,8 @@ def indexing(filename):
      :param filename: the input file to index
      :return: the output of the command
     '''
-    in_file = filename
     out_file = filename+"indexed"
-    command = "bowtie-build -f {0} {1}".format(in_file,out_file)
+    command = "bowtie-build -f {0} {1}".format(filename,out_file)
     return run_command(command)
 
 
@@ -70,17 +64,6 @@ def mapping_shortstack(in_file, ref_genome, n_core):
     command = "ShortStack --readfile {0} --genome {1}".format(in_file, ref_genome)
     return run_command(command)
 
-def mapping_tophat(in_file, ref_path, cores):
-    '''
-    This function allows to identify all the miRNAs by aligning the reads against mirBase.
-    :param in_file: the input file with the reads that are going to be aligned
-    :param ref_path: the path of the file about the reference file of mirBase
-    :param cores: the number of cores to use for the alignment
-    :return: the output of the command
-    '''
-
-    command = "tophat --bowtie1 -N 1 --library-type=fr-unstranded -p {0} {1} {2}".format(cores, ref_path, in_file)
-    return run_command(command)
 
 def feature_counts(in_file):
     '''
@@ -91,25 +74,10 @@ def feature_counts(in_file):
     command = "featureCounts -O -a hsa.gtf -o {0} {1}".format(out_file, in_file)
     return run_command(command)
 
-def miRNA_filter(filename):
-    '''
-     This function filters all the reads in the Unplaced.txt (the outcome of ShortStask).
-     The applied filter removes all the reads that are already mapped as miRNAs.
-     The output file contains all the reads that are not miRNAs.
-     :param filename: the input file to filter
-     :return: the filterd output file
-    '''
-    out_file = open("filtered_miRNA.txt", "w")
-    f = open(filename) #default rt mode
-    line = f.readlines()
-    for x in line:
-        value = x.split('\t')[4][:-1]
-        if value != '>50':
-            out_file.write(x)
-    return out_file
-
-def structure():
+'''def structure():
     cg = forgi.load_rna('Cluster_229_Y.txt',allow_many=false)
     fvm.plot_rna(cg, text_kwargs={"fontweight":"black"}, lighten=0.7,
              backbone_kwargs={"linewidth":3})
-    plt.show()
+    plt.show()'''
+
+
