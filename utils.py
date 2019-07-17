@@ -2,6 +2,7 @@ import shlex
 import subprocess
 import re
 
+
 def run_command(command):
     '''
     This function runs a command using subprocess
@@ -16,6 +17,7 @@ def run_command(command):
         raise Exception(err)
 
     return out
+
 
 def miRNA_filter(filename):
     '''
@@ -33,6 +35,7 @@ def miRNA_filter(filename):
         if value != '>50':
             out_file.write(x)
     return out_file
+
 
 def filtering(filename):
     '''
