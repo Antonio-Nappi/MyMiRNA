@@ -1,7 +1,6 @@
 **/*.fastq
 **/.idea
 **/venv
-**/*.html
 .Rhistory
 __pycache__/
 data/
@@ -9,4 +8,4 @@ ShortStack*/
 assets/
 *.txt
 pirna
-prova/
+prova*/

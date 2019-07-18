@@ -1,22 +1,24 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
+from flask_cors import CORS
 from my_mirna import aligning_bowtie, bam_to_fastq, cutadapt, fastqc, feature_counts, mapping_shortstack, multiqc
 import os
 import re
 
 app = Flask(__name__)
+CORS(app)
 
 
 @app.route('/trimming', methods=['POST'])
 def quality_and_trimming():
     # TODO label samples for differential analysis
     # TODO generate index dinamically
-    index = "prova"
+    index = "prova1"
 
-    # TODO retrieve from request
-    adapter = "TGGAATTCTCGGGTGCCAAGG"
+    params = request.get_json(silent=True, cache=False)
 
-    # TODO retrieve quality from request
-    quality = 20
+    adapter = params["adapter"]
+
+    quality = params["quality"]
 
     # TODO retrieve cores from request
     cores = 8
@@ -24,8 +26,8 @@ def quality_and_trimming():
     fastqc_folder = index + "/fastqc"
     trimmed_folder = index + "/trimmed"
 
-    # TODO retrieve from request
-    filenames = []
+    input_data_folder = "data"
+    filenames = os.listdir(input_data_folder)
 
     # Creates folders to store the fastqc output file and the trimmed fastq files
     os.mkdir(index)
@@ -34,12 +36,12 @@ def quality_and_trimming():
 
     # First fastqc run
     for filename in filenames:
-        fastqc(filename, fastqc_folder)
+        fastqc(input_data_folder + "/" + filename, fastqc_folder)
 
     # The adapter is trimmed and the file are saved as original_name_trimmed.fastq
     trimmed_filenames = []
     for filename in filenames:
-        trimmed_filename = re.sub(r'\.fastq', '', filename) + "_trimmed.fastq"
+        trimmed_filename = re.sub(r'\.fastq', '', filename) + "Trimmed.fastq"
         trimmed_filenames.append(trimmed_filename)
         cutadapt(filename, trimmed_folder+"/"+trimmed_filename, adapter, quality, cores)
 
@@ -152,4 +154,4 @@ def mirna():
 
 
 if __name__ == "__main__":
-    app.run('0.0.0.0', 8080)
+    app.run('127.0.0.1', 8080)
