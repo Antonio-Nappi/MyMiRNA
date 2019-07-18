@@ -9,9 +9,27 @@ import { RequestService } from './requests.service';
 })
 export class HomePage implements OnInit {
 
+  // Booleans that represents the current process. They have been used to show the relative ion-card
+  public isTrimming: boolean;
+  public isShortStack: boolean;
+  public isMiRNA: boolean;
+  public isPiRNA: boolean;
+  public isOthers: boolean;
+  public isNovelMirna: boolean;
+  public isNovelPirna: boolean;
+
   private multiqc: any;
 
-  constructor(private requestService: RequestService) { }
+
+  constructor(private requestService: RequestService) {
+    this.isTrimming = false;
+    this.isShortStack = false;
+    this.isPiRNA = false;
+    this.isOthers = false;
+    this.isMiRNA = false;
+    this.isNovelMirna = false;
+    this.isNovelPirna = false;
+  }
 
   ngOnInit() {
     document.getElementById('card2').setAttribute('disabled', 'true');
@@ -55,7 +73,7 @@ export class HomePage implements OnInit {
         document.getElementById('card3').setAttribute('disabled', 'false');
       } else if (form.name === 'f3') {
         const body = this.buildBody(form);
-    
+
         // this.requestService.mirnaDetection(body)
         document.getElementById('card4').setAttribute('disabled', 'false');
       } else if (name === 'f4') {
