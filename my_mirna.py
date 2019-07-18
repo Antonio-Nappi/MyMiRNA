@@ -1,7 +1,10 @@
 from utils import run_command
-#import matplotlib.pyplot as plt
-#import forgi.visual.mplotlib as fvm
-#import forgi
+import shlex
+import subprocess
+
+import matplotlib.pyplot as plt
+import forgi.visual.mplotlib as fvm
+import forgi
 
 
 def fastqc(in_file, out_dir='.'):
@@ -15,7 +18,7 @@ def fastqc(in_file, out_dir='.'):
     return run_command(fastqc_command)
 
 
-def cutadapt(in_file, out_file = "Norm_1_reduced_trimmed.fastq", adapter="TGGAATTCTCGGGTGCCAAGG",cores=8,quality=20):
+def cutadapt(in_file, out_file="Norm_1_reduced_trimmed.fastq", adapter="TGGAATTCTCGGGTGCCAAGG", cores=8, quality=20):
     '''
      In the pre-processing step it is necessary to trim the adapters.
      The tool used is CutAdapt
@@ -25,10 +28,13 @@ def cutadapt(in_file, out_file = "Norm_1_reduced_trimmed.fastq", adapter="TGGAAT
      :param cores: the number of cores to perform the command
      :param quality: the minimum read quality
     '''
-    command = "cutadapt -a {0} -o {1} {2} -j {3} -q {4} --discard-untrimmed -M {5} -m {6}".format(adapter,
-                                                                                       out_file,
-                                                                                       in_file,
-                                                                                       cores, quality, 35, 10)
+    command = "cutadapt -a {0} -j {3} -q {4} -m {5} -o {1} {2}".format(adapter,
+                                                                       out_file,
+                                                                       in_file,
+                                                                       cores,
+                                                                       quality,
+                                                                       10)
+    print(command)
     run_command(command)
 
 
@@ -56,9 +62,12 @@ def bam_to_fastq(in_file):
      :param in_file: the input file to convert
      :return: the output of the command
     '''
-    out_file = in_file[:-3]+"fastq"
-    command = "samtools fastq {0} > {1}".format(in_file, out_file)
-    return run_command(command)
+    out_file = in_file[:-3] + "fastq"
+    command = "samtools fastq {0}".format(in_file)
+    with open(out_file, "w") as file:
+        subprocess.call(shlex.split(command), stdout=file)
+
+    return
 
 
 def mapping_shortstack(in_file, ref_genome, out_dir, multimap_number=500, n_core=6):
@@ -72,7 +81,8 @@ def mapping_shortstack(in_file, ref_genome, out_dir, multimap_number=500, n_core
      :param n_core: the number of cores to run for the analysis
      :return: the output of the command
     '''
-    command = "ShortStack --outdir {4} --bowtie_m {0} --bowtie_cores {1} --readfile {2} --genome {3}".format(multimap_number, n_core, in_file, ref_genome, out_dir)
+    command = "ShortStack --outdir {4} --bowtie_m {0} --bowtie_cores {1} --readfile {2} --genome {3}".format(
+        multimap_number, n_core, in_file, ref_genome, out_dir)
     return run_command(command)
 
 
@@ -88,7 +98,8 @@ def aligning_bowtie(in_file, out_file, index_tag, noaligned_file, mismatches=1, 
     :param noaligned_file: the file that contains the unaligned reads
     :return: the output of the command
     '''
-    command = "bowtie -v {0} -S -p {1} --max /dev/null --un {2} {3} {4} {5}".format(mismatches, cores, noaligned_file, index_tag, in_file, out_file)
+    command = "bowtie -v {0} -S -p {1} --max /dev/null --un {2} {3} {4} {5}".format(mismatches, cores, noaligned_file,
+                                                                                    index_tag, in_file, out_file)
     return run_command(command)
 
 
@@ -102,14 +113,14 @@ def feature_counts(in_files, ref_file, out_file):
     param = ""
     for file in in_files:
         param += file + " "
-    command = "featureCounts -O -a {0} -o {1} {2}".format(ref_file, out_file, param)
+    command = "featureCounts -O -a {0} -F SAF -o {1} {2}".format(ref_file, out_file, param)
     return run_command(command)
 
 
 def structure():
-    cg = forgi.load_rna('Cluster_229_Y.txt',allow_many = false)
-    fvm.plot_rna(cg, text_kwargs={"fontweight":"black"}, lighten=0.7,
-             backbone_kwargs={"linewidth":3})
+    cg = forgi.load_rna('Cluster_229_Y.txt', allow_many=false)
+    fvm.plot_rna(cg, text_kwargs={"fontweight": "black"}, lighten=0.7,
+                 backbone_kwargs={"linewidth": 3})
     plt.show()
 
 
@@ -123,7 +134,8 @@ def novel_pirna(in_file, out_file, species=4):
     :return: the output of the command.
     '''
     command = "python3 piRNN.py -s {0} -i {1} -o {2}".format(species, in_file, out_file)
-    return  run_command(command)
+    return run_command(command)
+
 
 '''
 Una volta eseguito ShortStack si indicizza nuovamente su ogni DB per avere una granularità più fine per i dati.
