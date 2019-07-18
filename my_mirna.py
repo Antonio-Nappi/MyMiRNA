@@ -130,4 +130,5 @@ Una volta eseguito ShortStack si indicizza nuovamente su ogni DB per avere una g
 I passaggi successivi alla seconda indicizzazione sono comuni a tutti i percorsi.
 Bisogna ottenere i FASTA da RFAM per indicizzare sui non coding e da REFSeq per i nuovi geni.
 Una volta ottenuti i non mappati in nessuno dei database precedenti si effettua sempre la stessa analisi di espressione differenziale e target prediction
-'''
+    '''
+'''mirnovo è un'interfaccia web, nuovo scraping??'''
