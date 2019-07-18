@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { HomePage } from './home.page';
-import { SelectFileComponent } from './select-file/select-file.component';
 
 @NgModule({
   imports: [
@@ -19,7 +18,6 @@ import { SelectFileComponent } from './select-file/select-file.component';
       }
     ])
   ],
-  declarations: [HomePage, SelectFileComponent],
-  entryComponents: [SelectFileComponent]
+  declarations: [HomePage],
 })
 export class HomePageModule {}
