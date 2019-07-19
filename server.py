@@ -148,6 +148,23 @@ def mirna():
 
     # TODO differential analysis
 
+    # TODO return grafici (in template)
+
+
+
+@app.route("/mirnas", methods=['GET'])
+def mirnas():
+
+    # TODO retr
+
+
+@app.route("/mirnas/<string: mirna>", method=['GET'])
+def get_mirna(mirna):
+
+    # TODO search on mirbase
+
+    # TODO return a web page
+
 
 if __name__ == "__main__":
     app.run('127.0.0.1', 8080)
