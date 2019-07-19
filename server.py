@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, Response, send_from_directory
+from flask import Flask, jsonify, render_template, request, Response, send_from_directory
 from flask_cors import CORS
 from my_mirna import aligning_bowtie, bam_to_fastq, cutadapt, fastqc, feature_counts, mapping_shortstack, multiqc
 import os
@@ -28,7 +28,7 @@ def quality_and_trimming():
     trimmed_folder = index + "/trimmed"
 
     input_data_folder = "data"
-    '''
+
     filenames = os.listdir(input_data_folder)
 
     # Creates folders to store the fastqc output file and the trimmed fastq files
@@ -53,7 +53,6 @@ def quality_and_trimming():
 
     # All the fastqc results are reported in a single multiqc file
     multiqc(fastqc_folder, fastqc_folder)
-    '''
 
     multiqc_path = "/assets/multiqc_report.html"
 
@@ -155,8 +154,24 @@ def mirna():
 @app.route("/mirnas", methods=['GET'])
 def mirnas():
 
-    # TODO retr
+    # TODO retrieve index
+    index = "prova"
 
+    with open(index+"/mirna/mirna.names") as mirna_names_file:
+        mirna_names = [re.sub(r'\n', '', name) for name in mirna_names_file.readlines()]
+
+    ret = {
+        "mature": [],
+        "pre": []
+    }
+
+    for name in mirna_names:
+        if re.search(r'^[a-zA-Z]{2,3}-[a-zA-Z]{2,3}-[0-9]{3,5}$', name) is None:
+            ret["mature"].append(name)
+        else:
+            ret["pre"].append(name)
+
+    return jsonify(ret)
 
 @app.route("/mirnas/<string: mirna>", method=['GET'])
 def get_mirna(mirna):
