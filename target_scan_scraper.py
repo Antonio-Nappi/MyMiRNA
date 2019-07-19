@@ -6,6 +6,24 @@ url = "http://www.targetscan.org/cgi-bin/targetscan/vert_72/targetscan.cgi"
 base_url = "http://www.targetscan.org"
 
 
+def target_scan_get_table(name):
+    url = "http://www.targetscan.org/vert_71/temp/TargetScan7.1__{}.predicted_targets.txt".format(re.sub(r'hsa-', '', name))
+
+    r = requests.get(url)
+
+    if r.status_code != 200:
+        return "<table></table>"
+
+    table = "<table>"
+    rows = r.text.split('\n')
+    for row in rows:
+        table += "<tr>"
+        for col in row.split('\t'):
+            table += "<td>" + col + "</td>"
+        table += "</tr>"
+    table += "</table>"
+    return table
+
 def target_scan_search(gid, species="Human", **kwargs):
     '''
     This function scrapes TargetScan. If more than one parameter among mir_sc, mir_c, mir_nc, mir_vcn, mirg
@@ -57,3 +75,5 @@ def target_scan_search(gid, species="Human", **kwargs):
             "representative": re.sub("'", '',re.sub(r"document\.location='", '', check.get("onload")))
         }
         return ret
+
+print(target_scan_get_table("hsa-miR-3605-5p"))
