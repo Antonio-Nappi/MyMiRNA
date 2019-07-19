@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, Response, send_from_directory
 from flask_cors import CORS
 from my_mirna import aligning_bowtie, bam_to_fastq, cutadapt, fastqc, feature_counts, mapping_shortstack, multiqc
 import os
@@ -10,6 +10,7 @@ CORS(app)
 
 @app.route('/trimming', methods=['POST'])
 def quality_and_trimming():
+
     # TODO label samples for differential analysis
     # TODO generate index dinamically
     index = "prova1"
@@ -27,6 +28,7 @@ def quality_and_trimming():
     trimmed_folder = index + "/trimmed"
 
     input_data_folder = "data"
+    '''
     filenames = os.listdir(input_data_folder)
 
     # Creates folders to store the fastqc output file and the trimmed fastq files
@@ -43,7 +45,7 @@ def quality_and_trimming():
     for filename in filenames:
         trimmed_filename = re.sub(r'\.fastq', '', filename) + "Trimmed.fastq"
         trimmed_filenames.append(trimmed_filename)
-        cutadapt(filename, trimmed_folder+"/"+trimmed_filename, adapter, quality, cores)
+        cutadapt(input_data_folder + "/" + filename, trimmed_folder+"/"+trimmed_filename, adapter, quality, cores)
 
     # Second fastqc run
     for filename in trimmed_filenames:
@@ -51,11 +53,14 @@ def quality_and_trimming():
 
     # All the fastqc results are reported in a single multiqc file
     multiqc(fastqc_folder, fastqc_folder)
+    '''
 
-    return render_template(fastqc_folder+"/multiqc_report.html")
+    multiqc_path = "/assets/multiqc_report.html"
+
+    return multiqc_path
 
 
-@app.route("/shortstack", methods=['GET'])
+@app.route("/shortstack", methods=['POST'])
 def shortstack_mapping():
     # TODO retrieve from request
     multimap_threshold = 500
@@ -78,7 +83,7 @@ def shortstack_mapping():
         os.mkdir(tmp_dir)
         shortstack_dirs.append(tmp_dir)
         mapping_shortstack(index+"/trimmed/"+filename, "assets/human_index/genome.fa", tmp_dir, multimap_threshold, n_cores)
-        bam_to_fastq(tmp_dir + "/" + filename[:-5] + "bam")
+        # bam_to_fastq(tmp_dir + "/" + filename[:-5] + "bam")
 
     # Exports data about the mapping
     template_parameters = {
@@ -118,7 +123,7 @@ def shortstack_mapping():
     return render_template("templates/shortstack.html", params=template_parameters)
 
 
-@app.route("/mirna", methods=['GET'])
+@app.route("/mirna", methods=['POST'])
 def mirna():
     # TODO retrieve from request
     n_mismatch = 0
@@ -136,21 +141,12 @@ def mirna():
 
     in_files = []
     for folder in os.listdir(shortstack_folder):
-        tmp_dir = base_folder + "/" + folder
-        os.mkdir(tmp_dir)
-
-        out_file = tmp_dir + "/" + folder + ".sam"
-        in_files.append(out_file)
-
-        aligning_bowtie(shortstack_folder + "/" + folder + ".fastq",
-                        out_file,
-                        "assets/mirna_index/hairpin",
-                        tmp_dir + "/" + folder + "_unaligned.fastq",
-                        n_mismatch,
-                        n_cores)
+        in_files.append(shortstack_folder + "/" + folder + "/" + folder + ".bam")
 
     os.mkdir(base_folder+"/featurecounts")
     feature_counts(in_files, "assets/mirna.saf", base_folder+"/featurecounts/results")
+
+    # TODO differential analysis
 
 
 if __name__ == "__main__":
