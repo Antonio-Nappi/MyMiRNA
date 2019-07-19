@@ -122,7 +122,9 @@ def shortstack_mapping():
             else:
                 template_parameters["nm"].append((match.group(1), match.group(2)))
 
-    return render_template("templates/shortstack.html", params=template_parameters)
+    rendered = render_template("templates/shortstack.html", params=template_parameters)
+    with open("templates/shortstackrenderizzato.html",w) as file:
+        print(rendered, file=file)
 
 
 @app.route("/mirna", methods=['POST'])

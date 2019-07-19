@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { RequestService } from './requests.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { ModalController } from '@ionic/angular';
+import { ShowMirnaModalComponent } from './show-mirna-modal/show-mirna-modal.component';
 
 @Component({
   selector: 'app-home',
@@ -28,7 +30,7 @@ export class HomePage implements OnInit {
   public preMirnaList: string[];
   public mirnaInformation: SafeResourceUrl;
 
-  constructor(private requestService: RequestService, private sanitizer: DomSanitizer) {
+  constructor(private requestService: RequestService, private sanitizer: DomSanitizer, private modalCtrl: ModalController) {
     this.default = false;
     this.isTrimming = false;
     this.isShortStack = false;
@@ -65,12 +67,19 @@ export class HomePage implements OnInit {
           qual: form.value['qual'],
           adapter: form.value['adapter']
         });
+        this.modalCtrl.create({
+          component: ShowMirnaModalComponent,
+          componentProps: { mirna: 'ecco', document: this.multiqc }
+        }).then(modalEl => {
+          modalEl.present();
+        });
+          /*
         this.requestService.trimmingStep(body).subscribe(res => {
           this.multiqc = this.sanitizer.bypassSecurityTrustResourceUrl(res);
           document.getElementById('card2').setAttribute('disabled', 'false');
           this.isTrimming = true;
           this.default = true;
-        });
+        });*/
       } else if (name === 'f2') { // shortstack step
         const body = JSON.stringify({
           multimap: form.value['tresh'],
@@ -119,6 +128,9 @@ export class HomePage implements OnInit {
     this.requestService.mirnaInformation(path).subscribe(res => {
       this.mirnaInformation = this.sanitizer.bypassSecurityTrustResourceUrl(res);
       // ADD MODAL
+      this.modalCtrl.create({ component: ShowMirnaModalComponent}).then(modalEl => {
+        modalEl.present();
+      });
     });
   }
 
