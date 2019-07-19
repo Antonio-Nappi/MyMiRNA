@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> Results of the differential expression analysis </title>
+</head>
+<body>
+<div>
+<table style="width:100%">
+<tr><th> Charts </th> </tr>
+{% for param in params %}
+<tr><th><h1> param['name']</h1></th></tr>
+<tr> <th> <img src=param['path']> </th> </tr>
+{% endfor %}
+</table>
+</div>
+</body>
+</html>
