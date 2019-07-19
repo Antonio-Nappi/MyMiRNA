@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, render_template, request, Response, send_from_directory
 from flask_cors import CORS
+from mirbase_scrape import get_accession_number, get_details
 from my_mirna import aligning_bowtie, bam_to_fastq, cutadapt, fastqc, feature_counts, mapping_shortstack, multiqc
 import os
 import re
@@ -143,6 +144,14 @@ def mirna():
         in_files.append(shortstack_folder + "/" + folder + "/" + folder + ".bam")
 
     os.mkdir(base_folder+"/featurecounts")
+
+    with open(base_folder+"/featurecounts/coldata.tsv") as coldata_file:
+        coldata_file.write("Sample\tCondition\n")
+        for filename in in_files:
+            type = filename.split('/')[-1][0]
+            name = re.sub('/', '.', filename)
+            coldata_file.write("{}\t{}\n".format(name, type))
+
     feature_counts(in_files, "assets/mirna.saf", base_folder+"/featurecounts/results")
 
     # TODO differential analysis
@@ -176,9 +185,10 @@ def mirnas():
 @app.route("/mirnas/<string: mirna>", method=['GET'])
 def get_mirna(mirna):
 
-    # TODO search on mirbase
+    accession = get_accession_number(mirna)[0]
 
-    # TODO return a web page
+    params = get_details(mirna, accession)
+
 
 
 if __name__ == "__main__":
