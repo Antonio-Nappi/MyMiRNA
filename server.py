@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, render_template, request, Response, send_from_directory
 from flask_cors import CORS
-from mirbase_scrape import get_accession_number, get_details
+from mirbase_scraper import get_accession_number, get_details
 from my_mirna import aligning_bowtie, bam_to_fastq, cutadapt, fastqc, feature_counts, mapping_shortstack, multiqc
 import os
 import re
@@ -27,6 +27,7 @@ def quality_and_trimming():
 
     fastqc_folder = index + "/fastqc"
     trimmed_folder = index + "/trimmed"
+    output_folder = "src/assets/"+index
 
     input_data_folder = "data"
 
@@ -36,6 +37,7 @@ def quality_and_trimming():
     os.mkdir(index)
     os.mkdir(fastqc_folder)
     os.mkdir(trimmed_folder)
+    os.mkdir(output_folder)
 
     # First fastqc run
     for filename in filenames:
@@ -53,9 +55,9 @@ def quality_and_trimming():
         fastqc(trimmed_folder+"/"+filename, fastqc_folder)
 
     # All the fastqc results are reported in a single multiqc file
-    multiqc(fastqc_folder, fastqc_folder)
+    multiqc(fastqc_folder, output_folder)
 
-    multiqc_path = "/assets/multiqc_report.html"
+    multiqc_path = output_folder+"/multiqc_report.html"
 
     return multiqc_path
 
@@ -120,7 +122,9 @@ def shortstack_mapping():
             else:
                 template_parameters["nm"].append((match.group(1), match.group(2)))
 
-    return render_template("templates/shortstack.html", params=template_parameters)
+    rendered = render_template("templates/shortstack.html", params=template_parameters)
+    with open("templates/shortstackrenderizzato.html",w) as file:
+        print(rendered, file=file)
 
 
 @app.route("/mirna", methods=['POST'])
