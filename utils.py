@@ -53,3 +53,35 @@ def filtering(filename):
     for x in separate:
         if re.search("gene_biotype:miRNA", x) is None:
             out_file.write(">" + x)
+
+
+def split_params(string_params):
+    params = string_params.split(';')
+    ret = dict()
+    for param in params:
+        keyval = param.split('=')
+        ret[keyval[0]] = keyval[1]
+    return ret
+
+
+def filter_dashr(in_file, out_file):
+    with open(in_file) as inf:
+        lines = inf.readlines()
+
+    accepted = {'tRF5', 'tRF3', 'snoRNA', 'rRNA', 'tRNA', 'snRNA', 'scRNA'}
+
+    with open(out_file, "w") as outf:
+        outf.write("GeneID\tChr\tStart\tEnd\tStrand\n")
+        for line in lines:
+            vals = line.split('\t')
+            if vals[2] in accepted:
+                g_id = split_params(vals[8])["ID"]
+                chr = vals[0]
+                start = vals[3]
+                end = vals[4]
+                strand = vals[6]
+                s = '\t'.join([g_id, chr, start, end, strand]) + '\n'
+                outf.write(s)
+
+
+filter_dashr("assets/dashr.gff", "assets/sncRNA.saf")
