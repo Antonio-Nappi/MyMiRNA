@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { RequestService } from './requests.service';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-home',
@@ -10,6 +11,7 @@ import { RequestService } from './requests.service';
 export class HomePage implements OnInit {
 
   // Booleans that represents the current process. They have been used to show the relative ion-card
+  public default: boolean;
   public isTrimming: boolean;
   public isShortStack: boolean;
   public isMiRNA: boolean;
@@ -18,10 +20,16 @@ export class HomePage implements OnInit {
   public isNovelMirna: boolean;
   public isNovelPirna: boolean;
 
-  private multiqc: any;
+  // HTML pages that represent the results of the relative analysis
+  public multiqc: SafeResourceUrl;
+  public shortStack: SafeResourceUrl;
+  public mirnaAnalysis: SafeResourceUrl;
+  public matureMirnaList: string[];
+  public preMirnaList: string[];
+  public mirnaInformation: SafeResourceUrl;
 
-
-  constructor(private requestService: RequestService) {
+  constructor(private requestService: RequestService, private sanitizer: DomSanitizer) {
+    this.default = false;
     this.isTrimming = false;
     this.isShortStack = false;
     this.isPiRNA = false;
@@ -52,15 +60,18 @@ export class HomePage implements OnInit {
 
   onSubmit(form: NgForm, name: string) {
     if (form.valid) {
-      if (name === 'f1') {
+      if (name === 'f1') {  // adapter trimming step
         const body = JSON.stringify({
           qual: form.value['qual'],
           adapter: form.value['adapter']
         });
-
-        // this.multiqc = this.request.trimmingStep(body);
-        document.getElementById('card2').setAttribute('disabled', 'false');
-      } else if (name === 'f2') {
+        this.requestService.trimmingStep(body).subscribe(res => {
+          this.multiqc = this.sanitizer.bypassSecurityTrustResourceUrl(res);
+          document.getElementById('card2').setAttribute('disabled', 'false');
+          this.isTrimming = true;
+          this.default = true;
+        });
+      } else if (name === 'f2') { // shortstack step
         const body = JSON.stringify({
           multimap: form.value['tresh'],
           cores: form.value['core'],
@@ -68,15 +79,23 @@ export class HomePage implements OnInit {
           p_value_adjusted: form.value['p_value_adjusted'],
           log_2_fold: form.value['log']
         });
-
-        // this.requestService.shortStack(body)
-        document.getElementById('card3').setAttribute('disabled', 'false');
-      } else if (form.name === 'f3') {
+        this.requestService.shortStack(body).subscribe(res => {
+          this.shortStack = this.sanitizer.bypassSecurityTrustResourceUrl(res);
+          document.getElementById('card3').setAttribute('disabled', 'false');
+          this.isShortStack = true;
+        });
+      } else if (form.name === 'f3') {  // mirna analysis
         const body = this.buildBody(form);
-
-        // this.requestService.mirnaDetection(body)
-        document.getElementById('card4').setAttribute('disabled', 'false');
-      } else if (name === 'f4') {
+        this.requestService.mirnaAnalysis(body).subscribe(res => {  // differential analysis
+          this.mirnaAnalysis = this.sanitizer.bypassSecurityTrustResourceUrl(res);
+          this.requestService.mirnaDetection().subscribe(mirnaList => { // mirna & pre-mirna information
+            this.matureMirnaList = mirnaList.mature;
+            this.preMirnaList = mirnaList.pre;
+          });
+          document.getElementById('card4').setAttribute('disabled', 'false');
+          this.isMiRNA = true;
+        });
+      } else if (name === 'f4') { // pirna analysis
         const body = this.buildBody(form);
         // richiesta
         document.getElementById('card5').setAttribute('disabled', 'false');
@@ -93,6 +112,14 @@ export class HomePage implements OnInit {
         // richiesta
       }
     }
+  }
+
+  showMature(mirna: string) {
+    const path = 'http://localhost:8080/mirnas/' + mirna;
+    this.requestService.mirnaInformation(path).subscribe(res => {
+      this.mirnaInformation = this.sanitizer.bypassSecurityTrustResourceUrl(res);
+      // ADD MODAL
+    });
   }
 
 }
