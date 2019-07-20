@@ -8,7 +8,7 @@ import { SafeResourceUrl } from '@angular/platform-browser';
   styleUrls: ['./show-mirna-modal.component.scss'],
 })
 export class ShowMirnaModalComponent implements OnInit {
-  @Input() mirna: string;
+  @Input() mirnaName: string;
   @Input() document: SafeResourceUrl;
 
   constructor(private modalCtrl: ModalController) { }
