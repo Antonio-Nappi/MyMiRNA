@@ -148,7 +148,52 @@ def differential_analysis(in_file, index, coldata, **kwargs):
                                                                   p_adj_filter,
                                                                   log_2_fold,
                                                                   index)
-    return run_command(command)
+    run_command(command)
+
+    ret = [
+        {
+            "name": "Boxplot of relative log expression",
+            "path": "assets/{}/boxplot.jpeg".format(index)
+        },
+        {
+            "name": "Log2Fold change of all data",
+            "path": "assets/{}/spread_all.jpeg".format(index)
+        },
+        {
+            "name": "Log2Fold change of filtered data",
+            "path": "assets/{}/spread_filtered.jpeg".format(index)
+        },
+        {
+            "name": "p-value histogram of all data",
+            "path": "assets/{}/hist_p_all.jpeg".format(index)
+        },
+        {
+            "name": "p-value histogram of filtered data",
+            "path": "assets/{}/hist_p_filtered.jpeg".format(index)
+        },
+        {
+            "name": "Adjusted p-value histogram of all data",
+            "path": "assets/{}/hist_padj_all.jpeg".format(index)
+        },
+        {
+            "name": "Adjusted p-value histogram of filtered data",
+            "path": "assets/{}/hist_padj_filtered.jpeg".format(index)
+        },
+        {
+            "name": "Heatmap of the filtered data",
+            "path": "assets/{}/heatmap.jpeg".format(index)
+        },
+        {
+            "name": "Barplot of the expression of the filtered data",
+            "path": "assets/{}/barplot.jpeg".format(index)
+        },
+        {
+            "name": "Volcano plot that relates log2fold change and adjusted p-value",
+            "path": "assets/{}/volcano.jpeg".format(index)
+        }
+    ]
+
+    return ret
 
 '''
 Una volta eseguito ShortStack si indicizza nuovamente su ogni DB per avere una granularità più fine per i dati.

@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 from mirbase_scraper import get_accession_number, get_details
-from my_mirna import cutadapt, fastqc, feature_counts, mapping_shortstack, multiqc
+from my_mirna import differential_analysis, feature_counts, mapping_shortstack
 import os
 import re
 
@@ -139,7 +139,7 @@ def mirna():
     n_cores = params['cores']
 
     # TODO retrieve
-    index = "prova"
+    index = "prova1"
 
     base_folder = index + "/mirna"
     os.mkdir(base_folder)
@@ -161,9 +161,14 @@ def mirna():
 
     feature_counts(in_files, "assets/mirna.saf", base_folder+"/featurecounts/results")
 
-    # TODO differential analysis
+    graphics = differential_analysis(base_folder+"/featurecounts/results", index, base_folder+"/featurecounts/coldata.tsv", params)
 
-    # TODO return grafici (in template)
+    rendered = render_template("dearesults.html", params=graphics)
+
+    with open("gui/src/assets/{}/mirna_diff_exp.html".format(index), 'w') as file:
+        file.write(rendered)
+
+    return "assets/{}/mirna_diff_exp.html".format(index)
 
 
 @app.route("/mirnas", methods=['GET'])

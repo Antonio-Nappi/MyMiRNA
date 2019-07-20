@@ -60,8 +60,7 @@ dds <- estimateDispersions(dds)
 dds <- nbinomWaldTest(dds)
 res <- results(dds)
 filtered_res = res[res$pvalue <= pvalue_filter & res$padj <= padj_filter & res$log2FoldChange > logfold_filter, ]
-print(dim(res))
-print(dim(filtered_res))
+
 #SPREAD PLOTS
 jpeg(paste("gui/src/assets/",index,"/spread_all.jpeg", sep=""), width = 1280, height = 720)
 DESeq2::plotMA(res, ylim=c(-5, 5))
