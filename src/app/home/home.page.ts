@@ -22,6 +22,15 @@ export class HomePage implements OnInit {
   public isNovelMirna: boolean;
   public isNovelPirna: boolean;
 
+  // Boolean that represents if the result of the current step is ready
+  public isReadyTrimming: boolean;
+  public isReadyShortstack: boolean;
+  public isReadyMirna: boolean;
+  public isREadyPirna: boolean;
+  public isReadyOthers: boolean;
+  public isReadyNovelMi: boolean;
+  public isReadyNovelPi: boolean;
+
   // HTML pages that represent the results of the relative analysis
   public multiqc: SafeResourceUrl;
   public shortStack: SafeResourceUrl;
@@ -42,12 +51,20 @@ export class HomePage implements OnInit {
   }
 
   ngOnInit() {
+    document.getElementById('card1').setAttribute('disabled', 'false');
     document.getElementById('card2').setAttribute('disabled', 'true');
     document.getElementById('card3').setAttribute('disabled', 'true');
     document.getElementById('card4').setAttribute('disabled', 'true');
     document.getElementById('card5').setAttribute('disabled', 'true');
     document.getElementById('card6').setAttribute('disabled', 'true');
     document.getElementById('card7').setAttribute('disabled', 'true');
+    this.isReadyMirna = false;
+    this.isReadyNovelMi = false;
+    this.isReadyNovelPi = false;
+    this.isReadyOthers = false;
+    this.isReadyShortstack = false;
+    this.isReadyTrimming = false;
+    this.isREadyPirna = false;
   }
 
   private buildBody(form: NgForm) {
@@ -73,13 +90,13 @@ export class HomePage implements OnInit {
         }).then(modalEl => {
           modalEl.present();
         });
-          /*
         this.requestService.trimmingStep(body).subscribe(res => {
           this.multiqc = this.sanitizer.bypassSecurityTrustResourceUrl(res);
           document.getElementById('card2').setAttribute('disabled', 'false');
           this.isTrimming = true;
+          this.isReadyTrimming = true;
           this.default = true;
-        });*/
+        });
       } else if (name === 'f2') { // shortstack step
         const body = JSON.stringify({
           multimap: form.value['tresh'],
@@ -92,6 +109,8 @@ export class HomePage implements OnInit {
           this.shortStack = this.sanitizer.bypassSecurityTrustResourceUrl(res);
           document.getElementById('card3').setAttribute('disabled', 'false');
           this.isShortStack = true;
+          this.isReadyShortstack = true;
+          this.isReadyTrimming = false;
         });
       } else if (form.name === 'f3') {  // mirna analysis
         const body = this.buildBody(form);
@@ -103,35 +122,116 @@ export class HomePage implements OnInit {
           });
           document.getElementById('card4').setAttribute('disabled', 'false');
           this.isMiRNA = true;
+          this.isReadyMirna = true;
+          this.isReadyShortstack = false;
         });
       } else if (name === 'f4') { // pirna analysis
         const body = this.buildBody(form);
         // richiesta
         document.getElementById('card5').setAttribute('disabled', 'false');
-      } else if (name === 'f5') {
+        this.isPiRNA = true;
+        this.isREadyPirna = true;
+        this.isReadyMirna = false;
+      } else if (name === 'f5') { // other ncRNAs
         const body = this.buildBody(form);
         // richiesta
         document.getElementById('card6').setAttribute('disabled', 'false');
-      } else if (name === 'f6') {
+        this.isReadyOthers = true;
+        this.isREadyPirna = false;
+      } else if (name === 'f6') { // novel miRNAs
         const body = this.buildBody(form);
         // richiesta
         document.getElementById('card7').setAttribute('disabled', 'false');
-      } else {
+        this.isNovelMirna = true;
+        this.isReadyNovelMi = true;
+        this.isReadyOthers = false;
+      } else {  // novel piRNAs
         const body = this.buildBody(form);
         // richiesta
+        this.isNovelPirna = true;
+        this.isReadyNovelPi = true;
+        this.isReadyNovelMi = false;
       }
     }
   }
 
-  showMature(mirna: string) {
+  showMirna(mirna: string) {
     const path = 'http://localhost:8080/mirnas/' + mirna;
     this.requestService.mirnaInformation(path).subscribe(res => {
       this.mirnaInformation = this.sanitizer.bypassSecurityTrustResourceUrl(res);
       // ADD MODAL
-      this.modalCtrl.create({ component: ShowMirnaModalComponent}).then(modalEl => {
+      this.modalCtrl.create({ component: ShowMirnaModalComponent }).then(modalEl => {
         modalEl.present();
       });
     });
+  }
+
+  showResults(step: number) {
+    switch (step) {
+      case 1:
+        this.isReadyTrimming = true;
+        this.isReadyShortstack = false;
+        this.isReadyMirna = false;
+        this.isREadyPirna = false;
+        this.isReadyOthers = false;
+        this.isReadyNovelMi = false;
+        this.isReadyNovelPi = false;
+        break;
+      case 2:
+        this.isReadyTrimming = false;
+        this.isReadyShortstack = true;
+        this.isReadyMirna = false;
+        this.isREadyPirna = false;
+        this.isReadyOthers = false;
+        this.isReadyNovelMi = false;
+        this.isReadyNovelPi = false;
+        break;
+      case 3:
+        this.isReadyTrimming = false;
+        this.isReadyShortstack = false;
+        this.isReadyMirna = true;
+        this.isREadyPirna = false;
+        this.isReadyOthers = false;
+        this.isReadyNovelMi = false;
+        this.isReadyNovelPi = false;
+        break;
+      case 4:
+        this.isReadyTrimming = false;
+        this.isReadyShortstack = false;
+        this.isReadyMirna = false;
+        this.isREadyPirna = true;
+        this.isReadyOthers = false;
+        this.isReadyNovelMi = false;
+        this.isReadyNovelPi = false;
+        break;
+      case 5:
+        this.isReadyTrimming = false;
+        this.isReadyShortstack = false;
+        this.isReadyMirna = false;
+        this.isREadyPirna = false;
+        this.isReadyOthers = true;
+        this.isReadyNovelMi = false;
+        this.isReadyNovelPi = false;
+        break;
+      case 6:
+        this.isReadyTrimming = false;
+        this.isReadyShortstack = false;
+        this.isReadyMirna = false;
+        this.isREadyPirna = false;
+        this.isReadyOthers = false;
+        this.isReadyNovelMi = true;
+        this.isReadyNovelPi = false;
+        break;
+      case 7:
+        this.isReadyTrimming = false;
+        this.isReadyShortstack = false;
+        this.isReadyMirna = false;
+        this.isREadyPirna = false;
+        this.isReadyOthers = false;
+        this.isReadyNovelMi = false;
+        this.isReadyNovelPi = true;
+        break;
+    }
   }
 
 }
