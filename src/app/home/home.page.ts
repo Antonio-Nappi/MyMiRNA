@@ -84,12 +84,6 @@ export class HomePage implements OnInit {
           qual: form.value['qual'],
           adapter: form.value['adapter']
         });
-        this.modalCtrl.create({
-          component: ShowMirnaModalComponent,
-          componentProps: { mirna: 'ecco', document: this.multiqc }
-        }).then(modalEl => {
-          modalEl.present();
-        });
         this.requestService.trimmingStep(body).subscribe(res => {
           this.multiqc = this.sanitizer.bypassSecurityTrustResourceUrl(res);
           document.getElementById('card2').setAttribute('disabled', 'false');
@@ -112,7 +106,7 @@ export class HomePage implements OnInit {
           this.isReadyShortstack = true;
           this.isReadyTrimming = false;
         });
-      } else if (form.name === 'f3') {  // mirna analysis
+      } else if (name === 'f3') {  // mirna analysis
         const body = this.buildBody(form);
         this.requestService.mirnaAnalysis(body).subscribe(res => {  // differential analysis
           this.mirnaAnalysis = this.sanitizer.bypassSecurityTrustResourceUrl(res);
@@ -155,12 +149,14 @@ export class HomePage implements OnInit {
     }
   }
 
-  showMirna(mirna: string) {
-    const path = 'http://localhost:8080/mirnas/' + mirna;
+  showMirna(name: string) {
+    const path = 'http://localhost:8080/mirnas/' + name;
     this.requestService.mirnaInformation(path).subscribe(res => {
       this.mirnaInformation = this.sanitizer.bypassSecurityTrustResourceUrl(res);
-      // ADD MODAL
-      this.modalCtrl.create({ component: ShowMirnaModalComponent }).then(modalEl => {
+      this.modalCtrl.create({
+        component: ShowMirnaModalComponent,
+        componentProps: { mirnaName: name, document: this.mirnaInformation }
+      }).then(modalEl => {
         modalEl.present();
       });
     });
