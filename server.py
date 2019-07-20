@@ -1,7 +1,7 @@
-from flask import Flask, jsonify, render_template, request, Response, send_from_directory
+from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 from mirbase_scraper import get_accession_number, get_details
-from my_mirna import aligning_bowtie, bam_to_fastq, cutadapt, fastqc, feature_counts, mapping_shortstack, multiqc
+from my_mirna import cutadapt, fastqc, feature_counts, mapping_shortstack, multiqc
 import os
 import re
 
@@ -11,8 +11,7 @@ CORS(app)
 
 @app.route('/trimming', methods=['POST'])
 def quality_and_trimming():
-
-    # TODO label samples for differential analysis
+    '''
     # TODO generate index dinamically
     index = "prova1"
 
@@ -27,7 +26,7 @@ def quality_and_trimming():
 
     fastqc_folder = index + "/fastqc"
     trimmed_folder = index + "/trimmed"
-    output_folder = "src/assets/"+index
+    output_folder = "gui/src/assets/"+index
 
     input_data_folder = "data"
 
@@ -57,21 +56,22 @@ def quality_and_trimming():
     # All the fastqc results are reported in a single multiqc file
     multiqc(fastqc_folder, output_folder)
 
-    multiqc_path = output_folder+"/multiqc_report.html"
-
-    return multiqc_path
+    return "assets/{}/multiqc_report.html".format(index)
+    '''
+    return "assets/{}/multiqc_report.html".format("prova1")
 
 
 @app.route("/shortstack", methods=['POST'])
 def shortstack_mapping():
-    # TODO retrieve from request
-    multimap_threshold = 500
 
-    # TODO retrieve from request
-    n_cores = 8
+    params = request.get_json(silent=True, cache=False)
+
+    multimap_threshold = params['multimap']
+
+    n_cores = params['cores']
 
     # TODO retrieve
-    index = "prova"
+    index = "prova1"
 
     # Creates a folder for the shortstack output file
     base_dir = index+"/shortstack"
@@ -82,58 +82,61 @@ def shortstack_mapping():
     for filename in os.listdir(index+"/trimmed"):
         tmp = re.sub(r'\.fastq', '', filename)
         tmp_dir = base_dir+"/"+tmp
-        os.mkdir(tmp_dir)
         shortstack_dirs.append(tmp_dir)
-        mapping_shortstack(index+"/trimmed/"+filename, "assets/human_index/genome.fa", tmp_dir, multimap_threshold, n_cores)
-        # bam_to_fastq(tmp_dir + "/" + filename[:-5] + "bam")
+        mapping_shortstack(index+"/trimmed/"+filename,
+                           "assets/human_index/genome.fa",
+                           tmp_dir, multimap_threshold,
+                           n_cores)
 
     # Exports data about the mapping
-    template_parameters = {
-        "unique": [],
-        "mm": [],
-        "mm_ign": [],
-        "nm": []
-    }
+    template_parameters = []
+
     for log_dir in shortstack_dirs:
         with open(log_dir+"/Log.txt") as file:
             text = file.read()
+            name = log_dir.split('/')[-1]
+            values = []
 
             match = re.search(r'Unique mappers: ([0-9]{5,} / [0-9]{5,}) \(([0-9]{,3}\.[0-9] %)\)', text)
             if match is None:
-                template_parameters["unique"].append(("None", "None"))
+                values.append(("Unique mappers", "None", "None"))
             else:
-                template_parameters["unique"].append((match.group(1), match.group(2)))
+                values.append(("Unique mappers", match.group(1), match.group(2)))
 
             match = re.search(r'Multi mappers: ([0-9]{5,} / [0-9]{5,}) \(([0-9]{,3}\.[0-9] %)\)', text)
             if match is None:
-                template_parameters["mm"].append(("None", "None"))
+                values.append(("Multi mappers", "None", "None"))
             else:
-                template_parameters["mm"].append((match.group(1), match.group(2)))
+                values.append(("Multi mappers", match.group(1), match.group(2)))
 
             match = re.search(r'Multi mappers ignored and marked as unmapped: ([0-9]{5,} / [0-9]{5,}) \(([0-9]{,3}\.[0-9] %)\)', text)
             if match is None:
-                template_parameters["mm_ign"].append(("None", "None"))
+                values.append(("Multi mappers ignored and marked as unmapped", "None", "None"))
             else:
-                template_parameters["mm_ign"].append((match.group(1), match.group(2)))
+                values.append(("Multi mappers ignored and marked as unmapped", match.group(1), match.group(2)))
 
             match = re.search(r'Non mappers: ([0-9]{5,} / [0-9]{5,}) \(([0-9]{,3}\.[0-9] %)\)', text)
             if match is None:
-                template_parameters["nm"].append(("None", "None"))
+                values.append(("Non mappers", "None", "None"))
             else:
-                template_parameters["nm"].append((match.group(1), match.group(2)))
+                values.append(("Non mappers", match.group(1), match.group(2)))
+        template_parameters.append((name, values))
 
-    rendered = render_template("templates/shortstack.html", params=template_parameters)
-    with open("templates/shortstackrenderizzato.html",w) as file:
-        print(rendered, file=file)
+    rendered = render_template("shortstack.html", params=template_parameters)
+
+    with open("gui/src/assets/{}/shortstack.html".format(index), 'w') as file:
+        file.write(rendered)
+
+    return "assets/{}/shortstack.html".format(index)
 
 
 @app.route("/mirna", methods=['POST'])
 def mirna():
-    # TODO retrieve from request
-    n_mismatch = 0
+    params = request.get_json(silent=True, cache=False)
 
-    # TODO retrieve from request
-    n_cores = 8
+    n_mismatch = params['multimap']
+
+    n_cores = params['cores']
 
     # TODO retrieve
     index = "prova"
@@ -163,7 +166,6 @@ def mirna():
     # TODO return grafici (in template)
 
 
-
 @app.route("/mirnas", methods=['GET'])
 def mirnas():
 
@@ -186,13 +188,13 @@ def mirnas():
 
     return jsonify(ret)
 
-@app.route("/mirnas/<string: mirna>", method=['GET'])
+
+@app.route("/mirnas/<string:mirna>", methods=['GET'])
 def get_mirna(mirna):
 
     accession = get_accession_number(mirna)[0]
 
     params = get_details(mirna, accession)
-
 
 
 if __name__ == "__main__":

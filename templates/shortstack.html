@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> Results of the mapping</title>
+</head>
+<body>
+{% for param in params %}
+    <div>
+        <h1>Sample: {{param[0]}}</h1>
+        <table style="width:100%">
+        <tr>
+            <th>Type</th>
+            <th>Absolute read number</th>
+            <th>Percentage</th>
+        </tr>
+        {% for type in param[1] %}
+         <tr>
+            <td>{{type[0]}}</td>
+            <td>{{type[1]}}</td>
+            <td>{{type[2]}}</td>
+         </tr>
+         {% endfor %}
+        </table>
+    </div>
+{% endfor %}
+</body>
+</html>

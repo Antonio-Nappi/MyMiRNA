@@ -137,6 +137,19 @@ def novel_pirna(in_file, out_file, species=4):
     return run_command(command)
 
 
+def differential_analysis(in_file, index, coldata, **kwargs):
+    p_filter = kwargs.get("p_value", "none")
+    p_adj_filter = kwargs.get("p_value_adjusted", "none")
+    log_2_fold = kwargs.get("log", "none")
+
+    command = "Rscript diff_exp.r {0} {1} {2} {3} {4} {5}".format(in_file,
+                                                                  coldata,
+                                                                  p_filter,
+                                                                  p_adj_filter,
+                                                                  log_2_fold,
+                                                                  index)
+    return run_command(command)
+
 '''
 Una volta eseguito ShortStack si indicizza nuovamente su ogni DB per avere una granularità più fine per i dati.
 I passaggi successivi alla seconda indicizzazione sono comuni a tutti i percorsi.
