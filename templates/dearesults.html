@@ -8,8 +8,8 @@
 <table style="width:100%">
 <tr><th> Charts </th> </tr>
 {% for param in params %}
-<tr><th><h1> param['name']</h1></th></tr>
-<tr> <th> <img src=param['path']> </th> </tr>
+<tr><th><h1> {{param[0]}} </h1></th></tr>
+<tr> <th> <img src={{param[1]}} style="width:80%;height:80%"> </th> </tr>
 {% endfor %}
 </table>
 </div>

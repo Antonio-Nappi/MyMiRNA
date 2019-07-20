@@ -24,6 +24,7 @@ def target_scan_get_table(name):
     table += "</table>"
     return table
 
+
 def target_scan_search(gid, species="Human", **kwargs):
     '''
     This function scrapes TargetScan. If more than one parameter among mir_sc, mir_c, mir_nc, mir_vcn, mirg
@@ -72,8 +73,7 @@ def target_scan_search(gid, species="Human", **kwargs):
 
     else:
         ret = {
-            "representative": re.sub("'", '',re.sub(r"document\.location='", '', check.get("onload")))
+            "representative": re.sub("'", '', re.sub(r"document\.location='", '', check.get("onload")))
         }
         return ret
 
-print(target_scan_get_table("hsa-miR-3605-5p"))

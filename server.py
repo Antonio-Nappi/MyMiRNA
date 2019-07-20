@@ -1,8 +1,9 @@
+from commons import main_branch
 from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 from mirbase_scraper import get_accession_number, get_details
 from my_mirna import differential_analysis, feature_counts, mapping_shortstack
-import os
+from target_scan_scraper import target_scan_get_table
 import re
 
 app = Flask(__name__)
@@ -63,15 +64,16 @@ def quality_and_trimming():
 
 @app.route("/shortstack", methods=['POST'])
 def shortstack_mapping():
-
+    # TODO retrieve
+    index = "prova1"
+    '''
     params = request.get_json(silent=True, cache=False)
 
     multimap_threshold = params['multimap']
 
     n_cores = params['cores']
 
-    # TODO retrieve
-    index = "prova1"
+
 
     # Creates a folder for the shortstack output file
     base_dir = index+"/shortstack"
@@ -126,7 +128,7 @@ def shortstack_mapping():
 
     with open("gui/src/assets/{}/shortstack.html".format(index), 'w') as file:
         file.write(rendered)
-
+    '''
     return "assets/{}/shortstack.html".format(index)
 
 
@@ -141,41 +143,14 @@ def mirna():
     # TODO retrieve
     index = "prova1"
 
-    base_folder = index + "/mirna"
-    os.mkdir(base_folder)
-
-    shortstack_folder = index + "/shorstack"
-
-    in_files = []
-    for folder in os.listdir(shortstack_folder):
-        in_files.append(shortstack_folder + "/" + folder + "/" + folder + ".bam")
-
-    os.mkdir(base_folder+"/featurecounts")
-
-    with open(base_folder+"/featurecounts/coldata.tsv") as coldata_file:
-        coldata_file.write("Sample\tCondition\n")
-        for filename in in_files:
-            type = filename.split('/')[-1][0]
-            name = re.sub('/', '.', filename)
-            coldata_file.write("{}\t{}\n".format(name, type))
-
-    feature_counts(in_files, "assets/mirna.saf", base_folder+"/featurecounts/results")
-
-    graphics = differential_analysis(base_folder+"/featurecounts/results", index, base_folder+"/featurecounts/coldata.tsv", params)
-
-    rendered = render_template("dearesults.html", params=graphics)
-
-    with open("gui/src/assets/{}/mirna_diff_exp.html".format(index), 'w') as file:
-        file.write(rendered)
-
-    return "assets/{}/mirna_diff_exp.html".format(index)
+    return main_branch("mirna", index, params)
 
 
 @app.route("/mirnas", methods=['GET'])
 def mirnas():
 
     # TODO retrieve index
-    index = "prova"
+    index = "prova1"
 
     with open(index+"/mirna/mirna.names") as mirna_names_file:
         mirna_names = [re.sub(r'\n', '', name) for name in mirna_names_file.readlines()]
@@ -195,11 +170,33 @@ def mirnas():
 
 
 @app.route("/mirnas/<string:mirna>", methods=['GET'])
-def get_mirna(mirna):
+def get_mirna(mirna_name):
 
-    accession = get_accession_number(mirna)[0]
+    accession = get_accession_number(mirna_name)[0]
 
-    params = get_details(mirna, accession)
+    params = get_details(mirna_name, accession)
+
+    target_table = target_scan_get_table(mirna_name)
+
+    # TODO add . ( notation
+
+    # TODO plot secondary structure and save it to a file
+
+    # TODO return
+
+
+@app.route("/pirna", methods=['POST'])
+def pirna():
+    params = request.get_json(silent=True, cache=False)
+
+    n_mismatch = params['multimap']
+
+    n_cores = params['cores']
+
+    # TODO retrieve
+    index = "prova1"
+
+    return main_branch("pirna", index, params)
 
 
 if __name__ == "__main__":

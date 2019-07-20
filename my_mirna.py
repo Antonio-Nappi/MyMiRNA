@@ -1,4 +1,5 @@
 from utils import run_command
+import re
 import shlex
 import subprocess
 
@@ -137,63 +138,80 @@ def novel_pirna(in_file, out_file, species=4):
     return run_command(command)
 
 
-def differential_analysis(in_file, index, coldata, **kwargs):
-    p_filter = kwargs.get("p_value", "none")
-    p_adj_filter = kwargs.get("p_value_adjusted", "none")
-    log_2_fold = kwargs.get("log", "none")
+def differential_analysis(in_file, index, coldata, rna_type, kwargs):
+    p_filter = kwargs.get("p_value")
+    try:
+        float(p_filter)
+    except Exception as e:
+        p_filter = "none"
 
-    command = "Rscript diff_exp.r {0} {1} {2} {3} {4} {5}".format(in_file,
-                                                                  coldata,
-                                                                  p_filter,
-                                                                  p_adj_filter,
-                                                                  log_2_fold,
-                                                                  index)
+    p_adj_filter = kwargs.get("p_value_adjusted", "none")
+    try:
+        float(p_adj_filter)
+    except Exception as e:
+        p_adj_filter = "none"
+
+    log_2_fold = kwargs.get("log", "none")
+    try:
+        float(log_2_fold)
+    except Exception as e:
+        log_2_fold = "none"
+
+    command = "Rscript diff_exp.r {0} {1} {2} {3} {4} {5} {6}".format(in_file,
+                                                                      coldata,
+                                                                      p_filter,
+                                                                      p_adj_filter,
+                                                                      log_2_fold,
+                                                                      index,
+                                                                      rna_type)
+    print(command)
     run_command(command)
 
     ret = [
-        {
-            "name": "Boxplot of relative log expression",
-            "path": "assets/{}/boxplot.jpeg".format(index)
-        },
-        {
-            "name": "Log2Fold change of all data",
-            "path": "assets/{}/spread_all.jpeg".format(index)
-        },
-        {
-            "name": "Log2Fold change of filtered data",
-            "path": "assets/{}/spread_filtered.jpeg".format(index)
-        },
-        {
-            "name": "p-value histogram of all data",
-            "path": "assets/{}/hist_p_all.jpeg".format(index)
-        },
-        {
-            "name": "p-value histogram of filtered data",
-            "path": "assets/{}/hist_p_filtered.jpeg".format(index)
-        },
-        {
-            "name": "Adjusted p-value histogram of all data",
-            "path": "assets/{}/hist_padj_all.jpeg".format(index)
-        },
-        {
-            "name": "Adjusted p-value histogram of filtered data",
-            "path": "assets/{}/hist_padj_filtered.jpeg".format(index)
-        },
-        {
-            "name": "Heatmap of the filtered data",
-            "path": "assets/{}/heatmap.jpeg".format(index)
-        },
-        {
-            "name": "Barplot of the expression of the filtered data",
-            "path": "assets/{}/barplot.jpeg".format(index)
-        },
-        {
-            "name": "Volcano plot that relates log2fold change and adjusted p-value",
-            "path": "assets/{}/volcano.jpeg".format(index)
-        }
+        (
+            "Boxplot of relative log expression",
+            "{}_boxplot.jpeg".format(rna_type)
+        ),
+        (
+            "Log2Fold change of all data",
+            "{}_spread_all.jpeg".format(rna_type)
+        ),
+        (
+            "Log2Fold change of filtered data",
+            "{}_spread_filtered.jpeg".format(rna_type)
+        ),
+        (
+            "p-value histogram of all data",
+            "{}_hist_p_all.jpeg".format(rna_type)
+        ),
+        (
+            "p-value histogram of filtered data",
+            "{}_hist_p_filtered.jpeg".format(rna_type)
+        ),
+        (
+            "Adjusted p-value histogram of all data",
+            "{}_hist_padj_all.jpeg".format(rna_type)
+        ),
+        (
+            "Adjusted p-value histogram of filtered data",
+            "{}_hist_padj_filtered.jpeg".format(rna_type)
+        ),
+        (
+            "Heatmap of the filtered data",
+            "{}_heatmap.jpeg".format(rna_type)
+        ),
+        (
+            "Barplot of the expression of the filtered data",
+            "{}_barplot.jpeg".format(rna_type)
+        ),
+        (
+            "Volcano plot that relates log2fold change and adjusted p-value",
+            "{}_volcano.jpeg".format(rna_type)
+        )
     ]
 
     return ret
+
 
 '''
 Una volta eseguito ShortStack si indicizza nuovamente su ogni DB per avere una granularità più fine per i dati.
