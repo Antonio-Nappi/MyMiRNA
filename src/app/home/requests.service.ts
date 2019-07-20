@@ -14,34 +14,7 @@ export class RequestService {
 
     constructor(private http: HttpClient) { }
 
-    trimmingStep(body: string) {
-        const path = 'http://localhost:8080/trimming';
-        return this.http.post(
-            path,
-            body,
-            {
-                headers: new HttpHeaders({
-                    'Content-Type': 'application/json',
-                }),
-                responseType: 'text'
-            });
-    }
-
-    shortStack(body: string) {
-        const path = 'http://localhost:8080/shortstack';
-        return this.http.post(
-            path,
-            body,
-            {
-                headers: new HttpHeaders({
-                    'Content-Type': 'application/json',
-                }),
-                responseType: 'text'
-            });
-    }
-
-    mirnaAnalysis(body: string) {
-        const path = 'http://localhost:8080/mirna';
+    requestToServer(path: string, body: string) {
         return this.http.post(
             path,
             body,

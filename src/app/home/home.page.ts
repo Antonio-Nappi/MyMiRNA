@@ -38,6 +38,8 @@ export class HomePage implements OnInit {
   public matureMirnaList: string[];
   public preMirnaList: string[];
   public mirnaInformation: SafeResourceUrl;
+  public pirnaAnalysis: SafeResourceUrl;
+  public otherAnalysis: SafeResourceUrl;
 
   constructor(private requestService: RequestService, private sanitizer: DomSanitizer, private modalCtrl: ModalController) {
     this.default = false;
@@ -80,11 +82,12 @@ export class HomePage implements OnInit {
   onSubmit(form: NgForm, name: string) {
     if (form.valid) {
       if (name === 'f1') {  // adapter trimming step
+        const path = 'http://localhost:8080/trimming';
         const body = JSON.stringify({
           qual: form.value['qual'],
           adapter: form.value['adapter']
         });
-        this.requestService.trimmingStep(body).subscribe(res => {
+        this.requestService.requestToServer(path, body).subscribe(res => {
           this.multiqc = this.sanitizer.bypassSecurityTrustResourceUrl(res);
           document.getElementById('card2').setAttribute('disabled', 'false');
           this.isTrimming = true;
@@ -92,6 +95,7 @@ export class HomePage implements OnInit {
           this.default = true;
         });
       } else if (name === 'f2') { // shortstack step
+        const path = 'http://localhost:8080/shortstack';
         const body = JSON.stringify({
           multimap: form.value['tresh'],
           cores: form.value['core'],
@@ -99,7 +103,7 @@ export class HomePage implements OnInit {
           p_value_adjusted: form.value['p_value_adjusted'],
           log_2_fold: form.value['log']
         });
-        this.requestService.shortStack(body).subscribe(res => {
+        this.requestService.requestToServer(path, body).subscribe(res => {
           this.shortStack = this.sanitizer.bypassSecurityTrustResourceUrl(res);
           document.getElementById('card3').setAttribute('disabled', 'false');
           this.isShortStack = true;
@@ -107,8 +111,9 @@ export class HomePage implements OnInit {
           this.isReadyTrimming = false;
         });
       } else if (name === 'f3') {  // mirna analysis
+        const path = 'http://localhost:8080/mirna';
         const body = this.buildBody(form);
-        this.requestService.mirnaAnalysis(body).subscribe(res => {  // differential analysis
+        this.requestService.requestToServer(path, body).subscribe(res => {  // differential analysis
           this.mirnaAnalysis = this.sanitizer.bypassSecurityTrustResourceUrl(res);
           this.requestService.mirnaDetection().subscribe(mirnaList => { // mirna & pre-mirna information
             this.matureMirnaList = mirnaList.mature;
@@ -121,17 +126,24 @@ export class HomePage implements OnInit {
         });
       } else if (name === 'f4') { // pirna analysis
         const body = this.buildBody(form);
-        // richiesta
-        document.getElementById('card5').setAttribute('disabled', 'false');
-        this.isPiRNA = true;
-        this.isREadyPirna = true;
-        this.isReadyMirna = false;
+        const path = 'http://localhost:8080/pirna';
+        this.requestService.requestToServer(path, body).subscribe(res => {
+          this.pirnaAnalysis = this.sanitizer.bypassSecurityTrustResourceUrl(res);
+          document.getElementById('card5').setAttribute('disabled', 'false');
+          this.isPiRNA = true;
+          this.isREadyPirna = true;
+          this.isReadyMirna = false;
+        });
       } else if (name === 'f5') { // other ncRNAs
         const body = this.buildBody(form);
-        // richiesta
-        document.getElementById('card6').setAttribute('disabled', 'false');
-        this.isReadyOthers = true;
-        this.isREadyPirna = false;
+        const path = 'http://localhost:8080/ncrna';
+        this.requestService.requestToServer(path, body).subscribe(res => {
+          this.otherAnalysis = this.sanitizer.bypassSecurityTrustResourceUrl(res);
+          document.getElementById('card6').setAttribute('disabled', 'false');
+          this.isReadyOthers = true;
+          this.isREadyPirna = false;
+          this.isOthers = true;
+        });
       } else if (name === 'f6') { // novel miRNAs
         const body = this.buildBody(form);
         // richiesta
