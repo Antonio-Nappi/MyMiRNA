@@ -2,9 +2,10 @@ from commons import main_branch
 from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 from mirbase_scraper import get_accession_number, get_details
-from my_mirna import differential_analysis, feature_counts, mapping_shortstack
+from my_mirna import differential_analysis, feature_counts, mapping_shortstack, structure
 from target_scan_scraper import target_scan_get_table
 import re
+import RNA
 
 app = Flask(__name__)
 CORS(app)
@@ -169,20 +170,30 @@ def mirnas():
     return jsonify(ret)
 
 
-@app.route("/mirnas/<string:mirna>", methods=['GET'])
+@app.route("/mirnas/<string:mirna_name>", methods=['GET'])
 def get_mirna(mirna_name):
 
-    accession = get_accession_number(mirna_name)[0]
+    # TODO retrieve index
+    index = "prova1"
+
+    accession = get_accession_number(mirna_name)
 
     params = get_details(mirna_name, accession)
 
     target_table = target_scan_get_table(mirna_name)
 
-    # TODO add . ( notation
+    dot_bracket, _ = RNA.fold(params["sequence"])
 
-    # TODO plot secondary structure and save it to a file
+    structure(params["sequence"], dot_bracket, mirna_name, index)
 
-    # TODO return
+    params["img"] = mirna_name + ".png"
+
+    rendered = render_template("mirnadetail.html", param=params, table=target_table)
+
+    with open("gui/src/assets/{}/mirnadetail.html".format(index), 'w') as file:
+        file.write(rendered)
+
+    return "assets/{}/mirnadetail.html".format(index)
 
 
 @app.route("/pirna", methods=['POST'])

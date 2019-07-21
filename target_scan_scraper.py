@@ -12,16 +12,12 @@ def target_scan_get_table(name):
     r = requests.get(url)
 
     if r.status_code != 200:
-        return "<table></table>"
+        return []
 
-    table = "<table>"
+    table = []
     rows = r.text.split('\n')
     for row in rows:
-        table += "<tr>"
-        for col in row.split('\t'):
-            table += "<td>" + col + "</td>"
-        table += "</tr>"
-    table += "</table>"
+        table.append(row.split('\t'))
     return table
 
 

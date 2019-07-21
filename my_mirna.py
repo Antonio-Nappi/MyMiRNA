@@ -1,5 +1,4 @@
 from utils import run_command
-import re
 import shlex
 import subprocess
 
@@ -13,6 +12,7 @@ def fastqc(in_file, out_dir='.'):
      The method checks the quality of the reads in the pre-processing step.
      The tool used to compute the QC is FastQC
      :param in_file: the input files to analyse
+     :param out_dir: the output directory
      :return: the output of the command
     '''
     fastqc_command = "fastqc -o {0} {1}".format(out_dir, in_file)
@@ -118,11 +118,18 @@ def feature_counts(in_files, ref_file, out_file):
     return run_command(command)
 
 
-def structure():
-    cg = forgi.load_rna('Cluster_229_Y.txt', allow_many=false)
+def structure(sequence, dot_bracket, mirna_name, index):
+
+    out_dir = index + "/mirna"
+
+    with open(out_dir + "/" + mirna_name + ".db", "w") as temp_file:
+        temp_file.write(sequence + '\n')
+        temp_file.write(dot_bracket)
+
+    cg = forgi.load_rna(out_dir + "/" + mirna_name + ".db", allow_many=False)
     fvm.plot_rna(cg, text_kwargs={"fontweight": "black"}, lighten=0.7,
                  backbone_kwargs={"linewidth": 3})
-    plt.show()
+    plt.savefig("gui/src/assets/" + index + "/" + mirna_name + ".png")
 
 
 def novel_pirna(in_file, out_file, species=4):

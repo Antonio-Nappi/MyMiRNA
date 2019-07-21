@@ -1,4 +1,6 @@
 bs4
+forgi
+matplotlib
 flask
 re
 requests
