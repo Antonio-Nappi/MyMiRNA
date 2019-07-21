@@ -33,8 +33,8 @@ def main_branch(rna_type, index, params):
 
     rendered = render_template("dearesults.html", params=graphics)
 
-    with open("gui/src/assets/{}/{}_diff_exp.html".format(index, rna_type), 'w') as file:
+    with open("gui/src/assets/{}_diff_exp.html".format(rna_type), 'w') as file:
         file.write(rendered)
 
-    return "assets/{}/{}_diff_exp.html".format(index, rna_type)
+    return "assets/{}_diff_exp.html".format(rna_type)
 

@@ -129,7 +129,7 @@ def structure(sequence, dot_bracket, mirna_name, index):
     cg = forgi.load_rna(out_dir + "/" + mirna_name + ".db", allow_many=False)
     fvm.plot_rna(cg, text_kwargs={"fontweight": "black"}, lighten=0.7,
                  backbone_kwargs={"linewidth": 3})
-    plt.savefig("gui/src/assets/" + index + "/" + mirna_name + ".png")
+    plt.savefig("gui/src/assets/" + mirna_name + ".png")
 
 
 def novel_pirna(in_file, out_file, species=4):

@@ -58,9 +58,9 @@ def quality_and_trimming():
     # All the fastqc results are reported in a single multiqc file
     multiqc(fastqc_folder, output_folder)
 
-    return "assets/{}/multiqc_report.html".format(index)
+    return "assets/multiqc_report.html"
     '''
-    return "assets/{}/multiqc_report.html".format("prova1")
+    return "assets/multiqc_report.html"
 
 
 @app.route("/shortstack", methods=['POST'])
@@ -130,7 +130,7 @@ def shortstack_mapping():
     with open("gui/src/assets/{}/shortstack.html".format(index), 'w') as file:
         file.write(rendered)
     '''
-    return "assets/{}/shortstack.html".format(index)
+    return "assets/shortstack.html"
 
 
 @app.route("/mirna", methods=['POST'])
@@ -190,7 +190,7 @@ def get_mirna(mirna_name):
 
     rendered = render_template("mirnadetail.html", param=params, table=target_table)
 
-    with open("gui/src/assets/{}/mirnadetail.html".format(index), 'w') as file:
+    with open("gui/src/assets/mirnadetail.html".format(index), 'w') as file:
         file.write(rendered)
 
     return "assets/{}/mirnadetail.html".format(index)
@@ -208,6 +208,20 @@ def pirna():
     index = "prova1"
 
     return main_branch("pirna", index, params)
+
+
+@app.route("/ncrna", methods=['POST'])
+def sncrna():
+    params = request.get_json(silent=True, cache=False)
+
+    n_mismatch = params['multimap']
+
+    n_cores = params['cores']
+
+    # TODO retrieve
+    index = "prova1"
+
+    return main_branch("sncrna", index, params)
 
 
 if __name__ == "__main__":

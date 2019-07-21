@@ -42,7 +42,7 @@ write(names, file=paste(index,"/", rna_type, "/", rna_type, ".names", sep=""), n
 normalized_mirna <- betweenLaneNormalization(filtered_mirna, which="upper")
 
 #BOX PLOT
-jpeg(paste("gui/src/assets/",index,"/", rna_type, "_boxplot.jpeg", sep=""), width = 1280, height = 720)
+jpeg(paste("gui/src/assets/", rna_type, "_boxplot.jpeg", sep=""), width = 1280, height = 720)
 plotRLE(normalized_mirna,
         outline=FALSE, las=3, col=palette,
         ylab="Relative Log Expression",
@@ -65,38 +65,38 @@ filtered_res = res2[res2$pvalue <= pvalue_filter & res2$padj <= padj_filter & re
 
 
 #SPREAD PLOTS
-jpeg(paste("gui/src/assets/",index,"/", rna_type, "_spread_all.jpeg", sep=""), width = 1280, height = 720)
+jpeg(paste("gui/src/assets/", rna_type, "_spread_all.jpeg", sep=""), width = 1280, height = 720)
 DESeq2::plotMA(res, ylim=c(-5, 5))
 dev.off()
 
-jpeg(paste("gui/src/assets/",index,"/", rna_type, "_spread_filtered.jpeg", sep=""), width = 1280, height = 720)
+jpeg(paste("gui/src/assets/", rna_type, "_spread_filtered.jpeg", sep=""), width = 1280, height = 720)
 DESeq2::plotMA(filtered_res, ylim=c(-5, 5))
 dev.off()
 
 # HISTOGRAMS
-jpeg(paste("gui/src/assets/",index,"/", rna_type, "_hist_p_all.jpeg", sep=""), width = 1280, height = 720)
+jpeg(paste("gui/src/assets/", rna_type, "_hist_p_all.jpeg", sep=""), width = 1280, height = 720)
 hist(res$pvalue)
 dev.off()
 
-jpeg(paste("gui/src/assets/",index,"/", rna_type, "_hist_p_filtered.jpeg", sep=""), width = 1280, height = 720)
+jpeg(paste("gui/src/assets/", rna_type, "_hist_p_filtered.jpeg", sep=""), width = 1280, height = 720)
 hist(filtered_res$pvalue)
 dev.off()
 
-jpeg(paste("gui/src/assets/",index,"/", rna_type, "_hist_padj_all.jpeg", sep=""), width = 1280, height = 720)
+jpeg(paste("gui/src/assets/", rna_type, "_hist_padj_all.jpeg", sep=""), width = 1280, height = 720)
 hist(res$padj)
 dev.off()
 
-jpeg(paste("gui/src/assets/",index,"/", rna_type, "_hist_padj_filtered.jpeg", sep=""), width = 1280, height = 720)
+jpeg(paste("gui/src/assets/", rna_type, "_hist_padj_filtered.jpeg", sep=""), width = 1280, height = 720)
 hist(filtered_res$padj)
 dev.off()
 
 # HEATMAP
-jpeg(paste("gui/src/assets/",index,"/", rna_type, "_heatmap.jpeg", sep=""), width = 1280, height = 720)
+jpeg(paste("gui/src/assets/", rna_type, "_heatmap.jpeg", sep=""), width = 1280, height = 720)
 heatmap.2(as.matrix(filtered_res),scale = "column", col = heat.colors(256),main = "Test",dendrogram = "column",margins = c(8,10),cexCol = 1)
 dev.off()
 
 # BAR PLOT
-jpeg(paste("gui/src/assets/",index,"/", rna_type, "_barplot.jpeg", sep=""), width = 1280, height = 720)
+jpeg(paste("gui/src/assets/", rna_type, "_barplot.jpeg", sep=""), width = 1280, height = 720)
 test <-t(normalized_mirna[row.names(filtered_res), ])
 barplot(as.matrix(test)/sum(test)*100,
         legend.text=c("% of miRNA in the wild-type sample",
@@ -106,7 +106,7 @@ barplot(as.matrix(test)/sum(test)*100,
 dev.off()
 
 # VOLCANO PLOT
-jpeg(paste("gui/src/assets/",index,"/", rna_type, "_volcano.jpeg", sep=""), width = 1280, height = 720)
+jpeg(paste("gui/src/assets/", rna_type, "_volcano.jpeg", sep=""), width = 1280, height = 720)
 plot(res$log2FoldChange, -log10(res$pvalue),
      xlab = "log2FC", ylab = "-log10(p)", pch=20, col="grey")
 if (padj_filter == 2) padj_filter <- 0.05
