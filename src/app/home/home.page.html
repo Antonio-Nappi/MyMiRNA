@@ -11,6 +11,17 @@
     <ion-row>
       <ion-col size="2">
         <ion-list>
+          <ion-card id="card0" [hidden]="isIndex">
+            <form #form0="ngForm" (ngSubmit)="onSubmit(form0, 'f0')">
+              <ion-item>
+                <ion-label position="floating">Experiment's Index</ion-label>
+                <ion-input ngModel name="index" required #indexCtrl="ngModel" type="number"></ion-input>
+              </ion-item>
+              <ion-button expand="block" type="submit" [disabled]="!form0.valid">
+                Submit Index
+              </ion-button>
+            </form>
+          </ion-card>
           <ion-card id="card1" [hidden]="isTrimming">
             <form #form1="ngForm" (ngSubmit)="onSubmit(form1, 'f1')">
               <ion-item>
@@ -75,14 +86,6 @@
           <ion-card id="card3" [hidden]="isMiRNA">
             <form #form3="ngForm" (ngSubmit)="onSubmit(form3, 'f3')">
               <ion-item>
-                <ion-label position="floating">Max. Mismatches</ion-label>
-                <ion-input ngModel name="mismatches" required #mismCtrl="ngModel" type="text"></ion-input>
-              </ion-item>
-              <ion-item>
-                <ion-label position="floating">N. Cores</ion-label>
-                <ion-input ngModel name="core" required #coreCtrl="ngModel" type="number"></ion-input>
-              </ion-item>
-              <ion-item>
                 <ion-label position="floating">p_value</ion-label>
                 <ion-input ngModel name="p_value" #pvalueCtrl="ngModel" type="number"></ion-input>
               </ion-item>
@@ -111,14 +114,6 @@
           <ion-card id="card4" [hidden]="isPiRNA">
             <form #form4="ngForm" (ngSubmit)="onSubmit(form4, 'f4')">
               <ion-item>
-                <ion-label position="floating">Max. Mismatches</ion-label>
-                <ion-input ngModel name="mismatches" required #mismCtrl="ngModel" type="text"></ion-input>
-              </ion-item>
-              <ion-item>
-                <ion-label position="floating">N. Cores</ion-label>
-                <ion-input ngModel name="core" required #coreCtrl="ngModel" type="number"></ion-input>
-              </ion-item>
-              <ion-item>
                 <ion-label position="floating">p_value</ion-label>
                 <ion-input ngModel name="p_value" #pvalueCtrl="ngModel" type="number"></ion-input>
               </ion-item>
@@ -146,14 +141,6 @@
 
           <ion-card id="card5" [hidden]="isOthers">
             <form #form5="ngForm" (ngSubmit)="onSubmit(form5, 'f5')">
-              <ion-item>
-                <ion-label position="floating">Max. Mismatches</ion-label>
-                <ion-input ngModel name="mismatches" required #mismCtrl="ngModel" type="text"></ion-input>
-              </ion-item>
-              <ion-item>
-                <ion-label position="floating">N. Cores</ion-label>
-                <ion-input ngModel name="core" required #coreCtrl="ngModel" type="number"></ion-input>
-              </ion-item>
               <ion-item>
                 <ion-label position="floating">p_value</ion-label>
                 <ion-input ngModel name="p_value" #pvalueCtrl="ngModel" type="number"></ion-input>
@@ -255,7 +242,8 @@
       </ion-col>
       <ion-col [hidden]="default" class="background"></ion-col>
 
-      <ion-col [hidden]="!isReadyTrimming" size="10"> <!-- style="overflow-y: auto; overflow-x: auto" -->
+      <ion-col [hidden]="!isReadyTrimming" size="10">
+        <!-- style="overflow-y: auto; overflow-x: auto" -->
         <iframe style="width: 100%; height: 100%;" [src]='multiqc'></iframe>
       </ion-col>
 
@@ -275,12 +263,14 @@
         <iframe style="width: 100%; height: 100%;" [src]='otherAnalysis'></iframe>
       </ion-col>
 
-      <ion-col [hidden]="!isReadyNovelMi" size="10"> <!-- inserire novel mirna analysis-->
-        <iframe style="width: 100%; height: 100%;" ></iframe>
+      <ion-col [hidden]="!isReadyNovelMi" size="10">
+        <!-- inserire novel mirna analysis-->
+        <iframe style="width: 100%; height: 100%;"></iframe>
       </ion-col>
 
-      <ion-col [hidden]="!isReadyNovelPi" size="10"> <!-- inserire novel pirna analysis-->
-        <iframe style="width: 100%; height: 100%;"    ></iframe>
+      <ion-col [hidden]="!isReadyNovelPi" size="10">
+        <!-- inserire novel pirna analysis-->
+        <iframe style="width: 100%; height: 100%;"></iframe>
       </ion-col>
     </ion-row>
 
@@ -290,7 +280,7 @@
           <ion-item (click)="showMirna(mature)">{{ mature }}</ion-item>
         </ion-list>
         <ion-list *ngFor="let pre of preMirnaList">
-            <ion-item>{{ pre }}</ion-item>
+          <ion-item>{{ pre }}</ion-item>
         </ion-list>
       </ion-col>
     </ion-row>

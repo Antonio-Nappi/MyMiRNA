@@ -14,6 +14,7 @@ export class HomePage implements OnInit {
 
   // Booleans that represents the current process. They have been used to show the relative ion-card
   public default: boolean;
+  public isIndex: boolean;
   public isTrimming: boolean;
   public isShortStack: boolean;
   public isMiRNA: boolean;
@@ -41,8 +42,11 @@ export class HomePage implements OnInit {
   public pirnaAnalysis: SafeResourceUrl;
   public otherAnalysis: SafeResourceUrl;
 
+  public experimentIndex: number;
+
   constructor(private requestService: RequestService, private sanitizer: DomSanitizer, private modalCtrl: ModalController) {
     this.default = false;
+    this.isIndex = false;
     this.isTrimming = false;
     this.isShortStack = false;
     this.isPiRNA = false;
@@ -53,7 +57,8 @@ export class HomePage implements OnInit {
   }
 
   ngOnInit() {
-    document.getElementById('card1').setAttribute('disabled', 'false');
+    document.getElementById('card0').setAttribute('disabled', 'false');
+    document.getElementById('card1').setAttribute('disabled', 'true');
     document.getElementById('card2').setAttribute('disabled', 'true');
     document.getElementById('card3').setAttribute('disabled', 'true');
     document.getElementById('card4').setAttribute('disabled', 'true');
@@ -71,7 +76,17 @@ export class HomePage implements OnInit {
 
   private buildBody(form: NgForm) {
     return JSON.stringify({
-      multimap: form.value['mismatches'],
+      index: this.experimentIndex,
+      p_value: form.value['p_value'],
+      p_value_adjusted: form.value['p_value_adjusted'],
+      log_2_fold: form.value['log']
+    });
+  }
+
+  private buildBodyFornNovel(form: NgForm) {
+    return JSON.stringify({
+      index: this.experimentIndex,
+      mismatches: form.value['mismatches'],
       cores: form.value['core'],
       p_value: form.value['p_value'],
       p_value_adjusted: form.value['p_value_adjusted'],
@@ -81,9 +96,14 @@ export class HomePage implements OnInit {
 
   onSubmit(form: NgForm, name: string) {
     if (form.valid) {
-      if (name === 'f1') {  // adapter trimming step
+      if (name === 'f0') {  // index of the esperiment
+        this.experimentIndex = form.value['index'];
+        document.getElementById('card1').setAttribute('disabled', 'false');
+        this.isIndex = true;
+      } else if (name === 'f1') {  // adapter trimming step
         const path = 'http://localhost:8080/trimming';
         const body = JSON.stringify({
+          index: this.experimentIndex,
           qual: form.value['qual'],
           adapter: form.value['adapter']
         });
@@ -97,6 +117,7 @@ export class HomePage implements OnInit {
       } else if (name === 'f2') { // shortstack step
         const path = 'http://localhost:8080/shortstack';
         const body = JSON.stringify({
+          index: this.experimentIndex,
           multimap: form.value['tresh'],
           cores: form.value['core'],
           p_value: form.value['p_value'],
@@ -145,14 +166,14 @@ export class HomePage implements OnInit {
           this.isOthers = true;
         });
       } else if (name === 'f6') { // novel miRNAs
-        const body = this.buildBody(form);
+        const body = this.buildBodyFornNovel(form);
         // richiesta
         document.getElementById('card7').setAttribute('disabled', 'false');
         this.isNovelMirna = true;
         this.isReadyNovelMi = true;
         this.isReadyOthers = false;
       } else {  // novel piRNAs
-        const body = this.buildBody(form);
+        const body = this.buildBodyFornNovel(form);
         // richiesta
         this.isNovelPirna = true;
         this.isReadyNovelPi = true;
