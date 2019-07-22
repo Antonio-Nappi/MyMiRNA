@@ -41,6 +41,8 @@ export class HomePage implements OnInit {
   public mirnaInformation: SafeResourceUrl;
   public pirnaAnalysis: SafeResourceUrl;
   public otherAnalysis: SafeResourceUrl;
+  public novelMirna: SafeResourceUrl;
+  public novelPirna: SafeResourceUrl;
 
   public experimentIndex: number;
 
@@ -106,14 +108,14 @@ export class HomePage implements OnInit {
           index: this.experimentIndex,
           qual: form.value['qual'],
           adapter: form.value['adapter']
-        }); /*
+        });
         this.requestService.requestToServer(path, body).subscribe(res => {
-          this.multiqc = this.sanitizer.bypassSecurityTrustResourceUrl(res); */
+          this.multiqc = this.sanitizer.bypassSecurityTrustResourceUrl(res);
           document.getElementById('card2').setAttribute('disabled', 'false');
           this.isTrimming = true;
           this.isReadyTrimming = true;
           this.default = true;
-       // });
+        });
       } else if (name === 'f2') { // shortstack step
         const path = 'http://localhost:8080/shortstack';
         const body = JSON.stringify({
@@ -123,28 +125,28 @@ export class HomePage implements OnInit {
           p_value: form.value['p_value'],
           p_value_adjusted: form.value['p_value_adjusted'],
           log_2_fold: form.value['log']
-        }); /*
+        });
         this.requestService.requestToServer(path, body).subscribe(res => {
-          this.shortStack = this.sanitizer.bypassSecurityTrustResourceUrl(res);*/
-          document.getElementById('card3').setAttribute('disabled', 'false'); 
+          this.shortStack = this.sanitizer.bypassSecurityTrustResourceUrl(res);
+          document.getElementById('card3').setAttribute('disabled', 'false');
           this.isShortStack = true;
           this.isReadyShortstack = true;
           this.isReadyTrimming = false;
-       // });
+        });
       } else if (name === 'f3') {  // mirna analysis
         const path = 'http://localhost:8080/mirna';
-        const body = this.buildBody(form); /*
+        const body = this.buildBody(form);
         this.requestService.requestToServer(path, body).subscribe(res => {  // differential analysis
           this.mirnaAnalysis = this.sanitizer.bypassSecurityTrustResourceUrl(res);
           this.requestService.mirnaDetection().subscribe(mirnaList => { // mirna & pre-mirna information
             this.matureMirnaList = mirnaList.mature;
             this.preMirnaList = mirnaList.pre;
-          });*/
-          document.getElementById('card4').setAttribute('disabled', 'false'); 
+          });
+          document.getElementById('card4').setAttribute('disabled', 'false');
           this.isMiRNA = true;
           this.isReadyMirna = true;
           this.isReadyShortstack = false;
-     //   });
+        });
       } else if (name === 'f4') { // pirna analysis
         const body = this.buildBody(form);
         const path = 'http://localhost:8080/pirna';

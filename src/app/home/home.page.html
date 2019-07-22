@@ -231,7 +231,6 @@
       <ion-col [hidden]="default" class="background"></ion-col>
 
       <ion-col [hidden]="!isReadyTrimming" size="10">
-        <!-- style="overflow-y: auto; overflow-x: auto" -->
         <iframe style="width: 100%; height: 100%;" [src]='multiqc'></iframe>
       </ion-col>
 
@@ -252,13 +251,11 @@
       </ion-col>
 
       <ion-col [hidden]="!isReadyNovelMi" size="10">
-        <!-- inserire novel mirna analysis-->
-        <iframe style="width: 100%; height: 100%;"></iframe>
+        <iframe style="width: 100%; height: 100%;" [src]='novelMirna'></iframe>
       </ion-col>
 
       <ion-col [hidden]="!isReadyNovelPi" size="10">
-        <!-- inserire novel pirna analysis-->
-        <iframe style="width: 100%; height: 100%;"></iframe>
+        <iframe style="width: 100%; height: 100%;" [src]='novelPirna'></iframe>
       </ion-col>
     </ion-row>
 
