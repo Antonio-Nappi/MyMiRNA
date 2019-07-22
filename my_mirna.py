@@ -220,7 +220,43 @@ def differential_analysis(in_file, index, coldata, rna_type, kwargs):
     return ret
 
 
+def parse_mirdeep_result(in_files, out_file):
+    genes = dict()
+    for in_file in in_files:
+        with open(in_file) as file:
+            lines = [l[:-1] for l in file.readlines()]
+
+        for line in lines:
+            if line[:3] == "chr":
+                values = line.split('\t')
+                if values[13] in genes:
+                    genes[values[13]][in_file] = values[4]
+                else:
+                    genes[values[13]] = {
+                        in_file: values[4]
+                    }
+
+    with open(out_file, "w") as file:
+        head = "Geneid\tChr\tStart\tEnd\tStrand\tLength"
+        for in_file in in_files:
+            head += '\t' + in_file
+        head += '\n'
+        file.write(head)
+
+        for gene in genes:
+            s = gene + "\t0\t0\t0\t0\t0"
+            for in_file in in_files:
+                if in_file in genes[gene]:
+                    s += '\t' + genes[gene][in_file]
+
+                else:
+                    s += '\t0'
+            s += '\n'
+            file.write(s)
+
 '''
+def novel_mirna():
+    command = "mapper.pl data/N1.fastq -e -h -j -m -p assets/refseq_index/IndiceRefSeq -s proc_reads.fa -t rvg.arf"
 Una volta eseguito ShortStack si indicizza nuovamente su ogni DB per avere una granularità più fine per i dati.
 I passaggi successivi alla seconda indicizzazione sono comuni a tutti i percorsi.
 Bisogna ottenere i FASTA da RFAM per indicizzare sui non coding e da REFSeq per i nuovi geni.

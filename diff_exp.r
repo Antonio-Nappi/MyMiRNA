@@ -97,10 +97,10 @@ dev.off()
 
 # BAR PLOT
 jpeg(paste("gui/src/assets/", rna_type, "_barplot.jpeg", sep=""), width = 1280, height = 720)
+
 test <-t(normalized_mirna[row.names(filtered_res), ])
 barplot(as.matrix(test)/sum(test)*100,
-        legend.text=c("% of miRNA in the wild-type sample",
-                      "% of miRNA in the tumoral sample"),main="Barplot",
+        legend.text=colnames(mirna),main="Barplot",
         col=palette ,xlab="miRNA",ylab=" % number of reads",beside=FALSE,
         cex.names=0.5)
 dev.off()

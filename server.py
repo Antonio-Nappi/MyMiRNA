@@ -2,8 +2,9 @@ from commons import main_branch
 from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 from mirbase_scraper import get_accession_number, get_details
-from my_mirna import differential_analysis, feature_counts, mapping_shortstack, structure
+from my_mirna import cutadapt, fastqc, mapping_shortstack, multiqc, structure
 from target_scan_scraper import target_scan_get_table
+import os
 import re
 import RNA
 
@@ -13,22 +14,21 @@ CORS(app)
 
 @app.route('/trimming', methods=['POST'])
 def quality_and_trimming():
-    '''
-    # TODO generate index dinamically
-    index = "prova1"
-
+    return "assets/multiqc_report.html"
     params = request.get_json(silent=True, cache=False)
 
     adapter = params["adapter"]
 
-    quality = params["quality"]
+    quality = params["qual"]
+
+    index = str(params["index"])
 
     # TODO retrieve cores from request
     cores = 8
 
     fastqc_folder = index + "/fastqc"
     trimmed_folder = index + "/trimmed"
-    output_folder = "gui/src/assets/"+index
+    output_folder = "gui/src/assets/"
 
     input_data_folder = "data"
 
@@ -59,22 +59,18 @@ def quality_and_trimming():
     multiqc(fastqc_folder, output_folder)
 
     return "assets/multiqc_report.html"
-    '''
-    return "assets/multiqc_report.html"
 
 
 @app.route("/shortstack", methods=['POST'])
 def shortstack_mapping():
-    # TODO retrieve
-    index = "prova1"
-    '''
+    return "assets/shortstack.html"
     params = request.get_json(silent=True, cache=False)
 
     multimap_threshold = params['multimap']
 
     n_cores = params['cores']
 
-
+    index = str(params["index"])
 
     # Creates a folder for the shortstack output file
     base_dir = index+"/shortstack"
@@ -127,9 +123,9 @@ def shortstack_mapping():
 
     rendered = render_template("shortstack.html", params=template_parameters)
 
-    with open("gui/src/assets/{}/shortstack.html".format(index), 'w') as file:
+    with open("gui/src/assets/shortstack.html".format(index), 'w') as file:
         file.write(rendered)
-    '''
+
     return "assets/shortstack.html"
 
 
@@ -137,12 +133,7 @@ def shortstack_mapping():
 def mirna():
     params = request.get_json(silent=True, cache=False)
 
-    n_mismatch = params['multimap']
-
-    n_cores = params['cores']
-
-    # TODO retrieve
-    index = "prova1"
+    index = str(params["index"])
 
     return main_branch("mirna", index, params)
 
@@ -150,8 +141,7 @@ def mirna():
 @app.route("/mirnas", methods=['GET'])
 def mirnas():
 
-    # TODO retrieve index
-    index = "prova1"
+    index = str(request.args.get("index"))
 
     with open(index+"/mirna/mirna.names") as mirna_names_file:
         mirna_names = [re.sub(r'\n', '', name) for name in mirna_names_file.readlines()]
@@ -173,8 +163,7 @@ def mirnas():
 @app.route("/mirnas/<string:mirna_name>", methods=['GET'])
 def get_mirna(mirna_name):
 
-    # TODO retrieve index
-    index = "prova1"
+    index = str(request.args.get("index"))
 
     accession = get_accession_number(mirna_name)
 
@@ -193,19 +182,14 @@ def get_mirna(mirna_name):
     with open("gui/src/assets/mirnadetail.html".format(index), 'w') as file:
         file.write(rendered)
 
-    return "assets/{}/mirnadetail.html".format(index)
+    return "assets/mirnadetail.html".format(index)
 
 
 @app.route("/pirna", methods=['POST'])
 def pirna():
     params = request.get_json(silent=True, cache=False)
 
-    n_mismatch = params['multimap']
-
-    n_cores = params['cores']
-
-    # TODO retrieve
-    index = "prova1"
+    index = str(params["index"])
 
     return main_branch("pirna", index, params)
 
@@ -214,12 +198,7 @@ def pirna():
 def sncrna():
     params = request.get_json(silent=True, cache=False)
 
-    n_mismatch = params['multimap']
-
-    n_cores = params['cores']
-
-    # TODO retrieve
-    index = "prova1"
+    index = str(params["index"])
 
     return main_branch("sncrna", index, params)
 

@@ -21,7 +21,7 @@ def main_branch(rna_type, index, params):
         for filename in in_files:
             sample_type = filename.split('/')[-1][0]
             name = re.sub('/', '.', filename)
-            coldata_file.write("{}\t{}\n".format(name, sample_type))
+            coldata_file.write("{}\t{}\n".format('X'+name, sample_type))
 
     feature_counts(in_files, "assets/{}.saf".format(rna_type), base_folder+"/featurecounts/results")
 
