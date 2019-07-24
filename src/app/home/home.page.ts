@@ -22,6 +22,7 @@ export class HomePage implements OnInit {
   public isOthers: boolean;
   public isNovelMirna: boolean;
   public isNovelPirna: boolean;
+  public isStatistic: boolean;
 
   // Boolean that represents if the result of the current step is ready
   public isReadyTrimming: boolean;
@@ -31,6 +32,7 @@ export class HomePage implements OnInit {
   public isReadyOthers: boolean;
   public isReadyNovelMi: boolean;
   public isReadyNovelPi: boolean;
+  public isReadyStatistic: boolean;
 
   // HTML pages that represent the results of the relative analysis
   public multiqc: SafeResourceUrl;
@@ -43,6 +45,7 @@ export class HomePage implements OnInit {
   public otherAnalysis: SafeResourceUrl;
   public novelMirna: SafeResourceUrl;
   public novelPirna: SafeResourceUrl;
+  public statistic: SafeResourceUrl;
 
   public experimentIndex: number;
 
@@ -74,6 +77,7 @@ export class HomePage implements OnInit {
     this.isReadyShortstack = false;
     this.isReadyTrimming = false;
     this.isREadyPirna = false;
+    this.isStatistic = false;
   }
 
   private buildBody(form: NgForm) {
@@ -169,17 +173,24 @@ export class HomePage implements OnInit {
         });
       } else if (name === 'f6') { // novel miRNAs
         const body = this.buildBodyFornNovel(form);
-        // richiesta
-        document.getElementById('card7').setAttribute('disabled', 'false');
-        this.isNovelMirna = true;
-        this.isReadyNovelMi = true;
-        this.isReadyOthers = false;
+        const path = 'http://localhost:8080/novel_mirnas';
+        this.requestService.requestToServer(path, body).subscribe(res => {
+          this.novelMirna = this.sanitizer.bypassSecurityTrustResourceUrl(res);
+          document.getElementById('card7').setAttribute('disabled', 'false');
+          this.isNovelMirna = true;
+          this.isReadyNovelMi = true;
+          this.isReadyOthers = false;
+        });
       } else {  // novel piRNAs
         const body = this.buildBodyFornNovel(form);
-        // richiesta
-        this.isNovelPirna = true;
-        this.isReadyNovelPi = true;
-        this.isReadyNovelMi = false;
+        const path = 'http://localhost:8080/novel_pirnas';
+        this.requestService.requestToServer(path, body).subscribe(res => {
+          this.novelPirna = this.sanitizer.bypassSecurityTrustResourceUrl(res);
+          this.isNovelPirna = true;
+          this.isReadyNovelPi = true;
+          this.isReadyNovelMi = false;
+          this.isStatistic = true;
+        });
       }
     }
   }
@@ -207,6 +218,7 @@ export class HomePage implements OnInit {
         this.isReadyOthers = false;
         this.isReadyNovelMi = false;
         this.isReadyNovelPi = false;
+        this.isReadyStatistic = false;
         break;
       case 2:
         this.isReadyTrimming = false;
@@ -216,6 +228,7 @@ export class HomePage implements OnInit {
         this.isReadyOthers = false;
         this.isReadyNovelMi = false;
         this.isReadyNovelPi = false;
+        this.isReadyStatistic = false;
         break;
       case 3:
         this.isReadyTrimming = false;
@@ -225,6 +238,7 @@ export class HomePage implements OnInit {
         this.isReadyOthers = false;
         this.isReadyNovelMi = false;
         this.isReadyNovelPi = false;
+        this.isReadyStatistic = false;
         break;
       case 4:
         this.isReadyTrimming = false;
@@ -234,6 +248,7 @@ export class HomePage implements OnInit {
         this.isReadyOthers = false;
         this.isReadyNovelMi = false;
         this.isReadyNovelPi = false;
+        this.isReadyStatistic = false;
         break;
       case 5:
         this.isReadyTrimming = false;
@@ -243,6 +258,7 @@ export class HomePage implements OnInit {
         this.isReadyOthers = true;
         this.isReadyNovelMi = false;
         this.isReadyNovelPi = false;
+        this.isReadyStatistic = false;
         break;
       case 6:
         this.isReadyTrimming = false;
@@ -252,6 +268,7 @@ export class HomePage implements OnInit {
         this.isReadyOthers = false;
         this.isReadyNovelMi = true;
         this.isReadyNovelPi = false;
+        this.isReadyStatistic = false;
         break;
       case 7:
         this.isReadyTrimming = false;
@@ -261,7 +278,22 @@ export class HomePage implements OnInit {
         this.isReadyOthers = false;
         this.isReadyNovelMi = false;
         this.isReadyNovelPi = true;
+        this.isReadyStatistic = false;
         break;
+      case 8:
+        const body = JSON.stringify({ index: this.experimentIndex });
+        const path = 'http://localhost:8080/statistics';
+        this.requestService.requestToServer(path, body).subscribe(res => {
+          this.statistic = this.sanitizer.bypassSecurityTrustResourceUrl(res);
+          this.isReadyTrimming = false;
+          this.isReadyShortstack = false;
+          this.isReadyMirna = false;
+          this.isREadyPirna = false;
+          this.isReadyOthers = false;
+          this.isReadyNovelMi = false;
+          this.isReadyNovelPi = false;
+          this.isReadyStatistic = true;
+        });
     }
   }
 
